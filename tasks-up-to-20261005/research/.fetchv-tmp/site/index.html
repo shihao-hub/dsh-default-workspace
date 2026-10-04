@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Generic Video Download Browser Extension - FetchV</title>
+    <meta name="description" content="FetchV is a free web video download extension, which supports Chrome, Edge, Firefox and other browsers, and supports most online video websites.">
+        <link rel="alternate" hreflang="x-default" href="https://fetchv.net/">
+        <link rel="alternate" hreflang="en" href="https://fetchv.net/">
+        <link rel="alternate" hreflang="nl" href="https://fetchv.net/nl">
+        <link rel="alternate" hreflang="vi" href="https://fetchv.net/vi">
+        <link rel="alternate" hreflang="es" href="https://fetchv.net/es">
+        <link rel="alternate" hreflang="pt" href="https://fetchv.net/pt">
+        <link rel="alternate" hreflang="de" href="https://fetchv.net/de">
+        <link rel="alternate" hreflang="fr" href="https://fetchv.net/fr">
+        <link rel="alternate" hreflang="it" href="https://fetchv.net/it">
+        <link rel="alternate" hreflang="no" href="https://fetchv.net/no">
+        <link rel="alternate" hreflang="fi" href="https://fetchv.net/fi">
+        <link rel="alternate" hreflang="sv" href="https://fetchv.net/sv">
+        <link rel="alternate" hreflang="da" href="https://fetchv.net/da">
+        <link rel="alternate" hreflang="el" href="https://fetchv.net/el">
+        <link rel="alternate" hreflang="tr" href="https://fetchv.net/tr">
+        <link rel="alternate" hreflang="ru" href="https://fetchv.net/ru">
+        <link rel="alternate" hreflang="hi" href="https://fetchv.net/hi">
+        <link rel="alternate" hreflang="zh-CN" href="https://fetchv.net/zh-cn">
+        <link rel="alternate" hreflang="th" href="https://fetchv.net/th">
+        <link rel="alternate" hreflang="ko" href="https://fetchv.net/ko">
+        <link rel="alternate" hreflang="ro" href="https://fetchv.net/ro">
+        <link rel="alternate" hreflang="pl" href="https://fetchv.net/pl">
+        <link rel="alternate" hreflang="zh-TW" href="https://fetchv.net/zh-tw">
+        <link rel="alternate" hreflang="ga" href="https://fetchv.net/ga">
+        <link rel="alternate" hreflang="et" href="https://fetchv.net/et">
+        <link rel="alternate" hreflang="bg" href="https://fetchv.net/bg">
+        <link rel="alternate" hreflang="cs" href="https://fetchv.net/cs">
+        <link rel="alternate" hreflang="ms" href="https://fetchv.net/ms">
+        <link rel="alternate" hreflang="sk" href="https://fetchv.net/sk">
+        <link rel="alternate" hreflang="hu" href="https://fetchv.net/hu">
+        <link rel="alternate" hreflang="id" href="https://fetchv.net/id">
+        <link rel="alternate" hreflang="tl" href="https://fetchv.net/fil">
+        <link rel="alternate" hreflang="pt-BR" href="https://fetchv.net/pt-br">
+        <link rel="alternate" hreflang="pt-PT" href="https://fetchv.net/pt-pt">
+        <link rel="alternate" hreflang="ja" href="https://fetchv.net/ja">
+        <link href="/static/bootstrap-5.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="/static/bootstrap-5.3.1/icons/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/static/style.css" rel="stylesheet">
+<script src="/static/bootstrap-5.3.1/js/bootstrap.bundle.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRM4KE0V0H"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-HRM4KE0V0H');
+</script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+<header class="container-xxl py-4">
+    <div class="d-flex justify-content-between align-items-center">
+
+        <a href="/" class="d-flex align-items-center text-bg-purple text-decoration-none px-2 py-1 px-sm-3 py-sm-2 rounded-pill opacity-50 shadow-sm">
+            <img src="/static/images/logo.png" width="40" height="40">
+            <span class="display-6 fw-bolder ps-1">FetchV</span>
+        </a>
+        <nav>
+            <div class="offcanvas offcanvas-start fs-5" tabindex="-1" id="offcanvasNav">
+                <div class="mx-3 py-2 d-md-none text-end">
+                    <button data-bs-dismiss="offcanvas" class="btn btn-close"></button>
+                </div>
+                <ul class="list-unstyled d-md-flex justify-content-md-end p-3 p-md-0 mb-0">
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3 active" href="/">
+                            <span>Home</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0 position-relative">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3">
+                            <span>Web Store</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                        <ul class="sub-menu list-unstyled ps-5 ps-md-0 overflow-hidden mb-0" style="z-index:1024;">
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd">
+                                    <span class="text-nowrap">Chrome</span>
+                                    <span><i class="bi bi-browser-chrome"></i></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik">
+                                    <span>Edge</span>
+                                    <span><i class="bi bi-browser-edge"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/feedback">
+                            <span>Feedback</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li id="navEnd" class="">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/blog">
+                            <span class="nav-text">Blog</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <button id="offcanvasNavToggle" class="btn btn-lg btn-light d-md-none"><i class="bi bi-list"></i></button>
+        </nav>
+    </div>
+</header>
+<script>
+    if (navigator?.platform.indexOf("Win") > -1) {
+        if (location.pathname.startsWith('/zh-cn')) {
+            const $navEnd = document.getElementById('navEnd');
+            const $newNav = $navEnd.cloneNode(true);
+            const $newNavLink = $newNav.querySelector('a');
+            const $newNavText = $newNav.querySelector('.nav-text');
+            $newNavLink.setAttribute('href', 'https://efetch.net/cn');
+            $newNavLink.setAttribute('target', '_blank');
+            $newNavText.innerText = '桌面版(EFetch)';
+            $navEnd.insertAdjacentElement('afterend', $newNav);
+            $navEnd.className = 'me-md-4 mb-2 mb-md-0';
+        }
+    }
+</script>
+<div class="container-xxl">
+    <div class="bg-white px-3 py-4 px-sm-4 py-sm-5 shadow-sm border border-secondary-subtle rounded-3">
+        <div class="row gx-5">
+            <div class="col-xl-7">
+                <h1 class="display-4 fw-bolder mb-4">FetchV Video Download Extension</h1>
+                <p class="lead">FetchV is a professional and generic video download extension for browser. It is compatible with Chrome, Edge, and other Chromium-based browsers. With FetchV, you can download various types of online videos, including HLS streaming videos (m3u8), mp4, webm, flv, and more.</p>
+            </div>
+            <div class="col-xl-5 pt-3">
+                <a class="btn btn-lg btn-outline-success border-2 w-100 fs-3 py-4 fw-bolder d-flex justify-content-between align-items-center mb-4" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd">
+                    <span>Install<small class="fs-5 ps-1 fw-light">v3.2</small></span>
+                    <span class="d-flex justify-content-end align-items-center">
+                    <span class="fs-5 pe-1 fw-light">Chrome</span>
+                    <i class="bi bi-browser-chrome"></i>
+                </span>
+                </a>
+                <a class="btn btn-lg btn-outline-primary border-2 w-100 fs-3 py-4 fw-bolder d-flex justify-content-between align-items-center" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik">
+                    <span>Install<small class="fs-5 ps-1 fw-light">v3.2</small></span>
+                    <span class="d-flex justify-content-end align-items-center">
+                    <span class="fs-5 pe-1 fw-light">Edge</span>
+                    <i class="bi bi-browser-edge"></i>
+                </span>
+                </a>
+                <div class="py-2">
+                    <div class="d-flex justify-content-start align-items-center mb-2">
+                        <span class="fs-5 me-2"><i class="bi bi-file-earmark-zip-fill"></i></span>
+                        <a class="link-secondary" href="https://fetchv.net/install/fetchv.v3.0.zip">.zip installation package</a>
+                    </div>
+                    <p class="text-black-50">A .zip installation package suitable for other Chromium-based browsers. <a href="/blog/how-to-load-the-unpacked-extension-in-developer-mode">How to install</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 text-center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+                crossorigin="anonymous"></script>
+        <!-- FetchV_Top -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1805776847890085"
+             data-ad-slot="6269426759"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+</div>
+
+<section class="py-3">
+    <div class="border-bottom mb-4 mb-sm-5 border-2">
+        <div class="container-xxl">
+            <h2 class="display-5">Features of FetchV</h2>
+            <p class="lead">May be FetchV will be of great help to you, because of its features below</p>
+        </div>
+    </div>
+    <div class="container-xxl">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-success-subtle text-success-emphasis border-bottom border-success-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-collection-play"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-success-subtle"></span>
+                                <span class="position-relative fw-bolder">Static video support</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">Supports downloading most common static web videos and audios, such as MP4, WEBM, FLV, MP3, etc. You can easily save these resources to your computer.</p>
+                    </div>
+                    <span class="text-success-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-primary-subtle text-primary-emphasis border-bottom border-primary-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-wind"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-primary-subtle"></span>
+                                <span class="position-relative fw-bolder">Streaming video support</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">Supports downloading streaming videos, such as m3u8 videos. It can convert and merge the .ts video segments of m3u8 into a single MP4 file.</p>
+                    </div>
+                    <span class="text-primary-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-danger-subtle text-danger-emphasis border-bottom border-danger-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-record-btn-fill"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-danger-subtle"></span>
+                                <span class="position-relative fw-bolder">Recording support</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">FetchV's recording mode can convert the buffered data of a video into an MP4 video. This method allows you to download most difficult-to-download videos, such as recording live broadcasts.</p>
+                    </div>
+                    <span class="text-danger-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-warning-subtle text-warning-emphasis border-bottom border-warning-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-lightning-fill"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-warning-subtle"></span>
+                                <span class="position-relative fw-bolder">Multithreaded acceleration</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">FetchV uses multi-threaded downloading technology, which can achieve download speeds several times or even tens of times faster than the default download speed of a browser.</p>
+                    </div>
+                    <span class="text-warning-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+
+
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-dark-subtle text-dark-emphasis border-bottom border-dark-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-badge-hd-fill"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-dark-subtle"></span>
+                                <span class="position-relative fw-bolder">Multiresolution capture</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">If the target video provides multiple resolutions, this extension can capture all of them and give you the option to download.</p>
+                    </div>
+                    <span class="text-dark-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+
+
+            <div class="col position-relative mb-4">
+                <div class="bg-white border border-secondary-subtle shadow-sm h-100">
+                    <div class="bg-info-subtle text-info-emphasis border-bottom border-info-subtle text-center pt-4 pb-1">
+                        <span class="display-1"><i class="bi bi-badge-4k-fill"></i></span>
+                        <div class="d-flex justify-content-center align-items-start" style="height: 65px;">
+                            <h3 class="fs-4 position-relative">
+                                <span class="position-absolute bottom-0 start-0 w-100 border border-5 border-info-subtle"></span>
+                                <span class="position-relative fw-bolder">Large file downloading</span>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4 text-center">
+                        <p class="fw-light pb-0">For some high-definition and long-duration videos, their file sizes are often in GB. Thanks to the multi-threading technology, FetchV can easily download them.</p>
+                    </div>
+                    <span class="text-info-emphasis display-5 position-absolute bottom-0 end-0"><i class="bi bi-patch-check-fill"></i></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="container-xxl mb-2 text-center">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+            crossorigin="anonymous"></script>
+    <!-- FetchV_Middle -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-1805776847890085"
+         data-ad-slot="2390436350"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+
+<section class="py-3 py-sm-5 mb-5 overflow-hidden">
+    <div class="border-bottom mb-3 border-2">
+        <div class="container-xxl">
+            <h2 class="display-5">How to use</h2>
+        </div>
+    </div>
+    <div class="container-xxl">
+        <div class="row gx-5 mb-3 mb-sm-5 py-4">
+            <div class="col-xl-6 mb-5">
+                <h3>Downloading Mode</h3>
+                <p class="lead">If the video URL can be successfully captured, the download mode is preferred to obtain a more enjoyable download speed.</p>
+                <div class="py-2">
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#dmCollapse1">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-1-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Open The Page With Video</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="dmCollapse1" class="py-3 text-muted multi-collapse collapse">After installing the extension in the browser, open the video webpage. The extension icon in the upper right corner of the browser will display a numerical subscript, which means that the video URL in the webpage is captured. If there are no numbers, play the video or refresh the page.</div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#dmCollapse2">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-2-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Select The Download Item</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="dmCollapse2" class="py-3 text-muted multi-collapse collapse">Click the extension icon, and a popup will show. If the video URL is captured, it will be displayed in the list. Click the download icon, a new tab will be created, and then the download will begin. Sometimes there may be multiple URLs displayed in the list, you should judge by the file format and file size. If too many URLs from other domains are captured in the list, which interferes with your choice, you can filter all the video URLs from that domain by clicking the blocking icon on the right side of the item.</div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#dmCollapse3">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-3-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Download Begin</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="dmCollapse3" class="py-3 text-muted multi-collapse collapse">After the download task is created, you can pause, cancel and save cached part of the video. If the video type is m3u8 and multi-resolution is provided, the program will choose the maximum resolution by default. If you don't need a maximum clear video, you can choose other resolutions. Please note that during the video download process, do not close the tab showing the task.</div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            <div class="col-xl-6">
+                <video src="/static/video/hls.mp4" class="w-100 rounded-3 shadow" controls></video>
+            </div>
+        </div>
+        <div class="row gx-5 py-4">
+            <div class="col-xl-6 order-xl-1 mb-5">
+                <h3>Recording Mode</h3>
+                <p class="lead">When the downloading mode not working, using the recording mode can solve the problem.</p>
+                <div class="py-2">
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#rmCollapse1">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-1-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Open The Page With Video</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="rmCollapse1" class="py-3 text-muted multi-collapse collapse">After installing the extension in the browser, open the video webpage. If there is a video in the page, but the URL cannot be captured, click the record button.</div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#rmCollapse2">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-2-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Choose a Fixed Resolution</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="rmCollapse2" class="py-3 text-muted multi-collapse collapse">After clicking the record button, a prompt box will pop up, follow it. If the current video has an optional resolution, please make sure to select a fixed resolution instead of automatic, otherwise in the case of poor network conditions, automatic resolution switching, the recorded video will be splited into multiple clips of different resolutions.</div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer collapsed" data-bs-toggle="collapse" data-bs-target="#rmCollapse3">
+                            <span class="text-warning fs-4 me-2"><i class="bi bi-3-circle-fill"></i></span>
+                            <h5 class="flex-grow-1 mb-0 fw-light">Recording Begin</h5>
+                            <span class="collapse-dash fs-4 d-none"><i class="bi bi-dash-lg"></i></span>
+                            <span class="collapse-plus fs-4"><i class="bi bi-plus-lg"></i></span>
+                        </div>
+                        <div id="rmCollapse3" class="py-3 text-muted multi-collapse collapse">After clicking the Confirm button, the program will create a new tab to display the recording progress. Don't close this page before it is finished, and don't close the video playing page at the same time. In fact, the recorder get the cached data in the player, so you can check the recording progress through the cache progress bar of the video. If you want to speed up the recording, you can drag the playback progress bar to the end of the cache bar to speed up the cache, or you can choose double-speed playback.</div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-xl-6 order-xl-0">
+                <video src="/static/video/rec.mp4" class="w-100 rounded-3 shadow" controls></video>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.querySelectorAll('.collapse').forEach($collapse => {
+        $collapse.addEventListener('hidden.bs.collapse', () => {
+            const $toggle = document.querySelector('[data-bs-target="#'+$collapse.getAttribute('id')+'"]');
+            $toggle.querySelector('.collapse-dash').classList.add('d-none');
+            $toggle.querySelector('.collapse-plus').classList.remove('d-none');
+        });
+        $collapse.addEventListener('shown.bs.collapse', () => {
+            const $toggle = document.querySelector('[data-bs-target="#'+$collapse.getAttribute('id')+'"]');
+            $toggle.querySelector('.collapse-dash').classList.remove('d-none');
+            $toggle.querySelector('.collapse-plus').classList.add('d-none');
+        });
+    });
+</script>
+<footer class="pt-5 pb-2 text-dark-emphasis bg-dark-subtle">
+    <div class="container-xxl py-3 py-sm-5 mb-sm-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xxl-4">
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Browser support</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1">Chromium 92+</li>
+                    <li class="mb-1">Google Chrome 92+</li>
+                    <li class="mb-1">Microsoft Edge 92+</li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Information</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/privacy-policy" rel="nofollow">Privacy policy</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/terms-of-service" rel="nofollow">Terms of service</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/feedback">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Function</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/m3u8downloader">M3U8 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/videodownloader">MP4 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/bufferrecorder">Video Buffering Recorder</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Interactive</span>
+                    </h5>
+                </div>
+                <a class="display-6 me-2" href=""><i class="bi bi-google"></i></a>
+                <a class="display-6" href="https://www.reddit.com/r/chrome_extensions/comments/1auj9vm/hls_m3u8_video_downloader_chrome_extensions/"><i class="bi bi-reddit"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="border-top mt-5 py-3 border-dark-subtle">
+        <div class="container-xxl text-black-50 d-flex justify-content-between align-items-center">
+            <span>&copy;fetchv.net. All rights reserved</span>
+                        <button id="langSwitchToggle" class="btn btn-light"><span class="me-1">EN</span><i class="bi bi-globe"></i></button>
+            <div id="langSwitch" class="offcanvas offcanvas-end" tabindex="-1" style="max-width: 200px;">
+                <div class="offcanvas-header pb-0">
+                    <span></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body narrow-scrollbar">
+                                        <a class="d-block mb-2" href="/">English</a>
+                                        <a class="d-block mb-2" href="/nl">Nederlands</a>
+                                        <a class="d-block mb-2" href="/vi">Tiếng Việt</a>
+                                        <a class="d-block mb-2" href="/es">Espa&ntilde;ol</a>
+                                        <a class="d-block mb-2" href="/pt">Portugu&ecirc;s</a>
+                                        <a class="d-block mb-2" href="/de">Deutsche</a>
+                                        <a class="d-block mb-2" href="/fr">Fran&ccedil;ais</a>
+                                        <a class="d-block mb-2" href="/it">Italiano</a>
+                                        <a class="d-block mb-2" href="/no">Norsk</a>
+                                        <a class="d-block mb-2" href="/fi">Suomalainen</a>
+                                        <a class="d-block mb-2" href="/sv">Svenska</a>
+                                        <a class="d-block mb-2" href="/da">Dansk</a>
+                                        <a class="d-block mb-2" href="/el">&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;ά</a>
+                                        <a class="d-block mb-2" href="/tr">T&uuml;rk</a>
+                                        <a class="d-block mb-2" href="/ru">русский</a>
+                                        <a class="d-block mb-2" href="/hi">हिंदी</a>
+                                        <a class="d-block mb-2" href="/zh-cn">简体中文</a>
+                                        <a class="d-block mb-2" href="/th">ไทย</a>
+                                        <a class="d-block mb-2" href="/ko">한국어</a>
+                                        <a class="d-block mb-2" href="/ro">Rom&acirc;nă</a>
+                                        <a class="d-block mb-2" href="/pl">Polskie</a>
+                                        <a class="d-block mb-2" href="/zh-tw">繁體中文</a>
+                                        <a class="d-block mb-2" href="/ga">Gaeilge</a>
+                                        <a class="d-block mb-2" href="/et">eesti keel</a>
+                                        <a class="d-block mb-2" href="/bg">български</a>
+                                        <a class="d-block mb-2" href="/cs">če&scaron;tina</a>
+                                        <a class="d-block mb-2" href="/ms">Melayu</a>
+                                        <a class="d-block mb-2" href="/sk">slovensk&yacute;</a>
+                                        <a class="d-block mb-2" href="/hu">Magyar</a>
+                                        <a class="d-block mb-2" href="/id">Bahasa Indonesia</a>
+                                        <a class="d-block mb-2" href="/fil">Filipino</a>
+                                        <a class="d-block mb-2" href="/pt-br">Portugu&ecirc;s (Brasil)</a>
+                                        <a class="d-block mb-2" href="/pt-pt">Portugu&ecirc;s (Portugal)</a>
+                                        <a class="d-block mb-2" href="/ja">日本語</a>
+                                    </div>
+            </div>
+                    </div>
+    </div>
+</footer>
+<script>
+    (() => {
+        const $offcanvasNavToggle = document.getElementById('offcanvasNavToggle');
+        const $langSwitchToggle = document.getElementById('langSwitchToggle');
+        const offcanvasNav = new bootstrap.Offcanvas('#offcanvasNav');
+        $offcanvasNavToggle.onclick = () => {
+            offcanvasNav.toggle();
+        };
+        if ($langSwitchToggle) {
+            const langSwitch = new bootstrap.Offcanvas('#langSwitch');
+            $langSwitchToggle.onclick = () => {
+                langSwitch.toggle();
+            }
+        }
+    })();
+</script>
+</body>
+</html>

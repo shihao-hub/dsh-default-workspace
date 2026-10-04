@@ -1,0 +1,1 @@
+import{FMP4Muxer}from"./fmp4-muxer.js";onmessage=async function(e){const{videoDuration:t,videoInitSegment:s,audioDuration:o,audioInitSegment:a,chunks:n}=e.data;try{const e=FMP4Muxer(!0),i=await e.convert(t,s,o,a,n);postMessage({result:i})}catch(e){postMessage({})}},setTimeout((()=>{postMessage({})}),500);

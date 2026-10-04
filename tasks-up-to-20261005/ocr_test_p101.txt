@@ -1,0 +1,35 @@
+92PostgreSQL数据库内核分析
+进程创建一个Hash表，其Hash键为表的OID，并设置Hash函数为oid_hash。Hash表的创建在函数
+hash_create中实现，该函数将创建一个标准Hash表结构体HTAB。
+开始
+Cache未初始化？
+初始化cache
+Y
+N
+cc_lsearches加1
+初始化查找键信息
+根据给定的查找键计算出Hash值lhashvalue
+在Cache的cc_lists中查找CatCList
+扫描系统表构造一个
+找到？
+N
+CatCList加入cc_lists中
+将找到的CatCList放在cc_lists的最前面，
+然后将CatCList的refcount加1
+返回List
+图3-17函数SearchCatcacheList流程
+.在完成了Hash表的创建后，InitPostgres将调用RelationCacheInitializePhase2进人第二阶段的初
+始化。该函数将必要的系统表和系统表索引的模式信息加人到RelCache中，这个过程通过函数Re-
+lationCacheInitializePhase2来实现。这个阶段会确保pg_class、Pg_attribute、Pg_proc、Pg-type 四个系
+统表及相关索引的模式信息被加人到RelCache。在PostgreSQL中，使用一个文件pg_intemal.init来
+记录系统表RelationData结构体，若该文件存在且未损坏，则将其内容直接读人RelCache中。否则，
+分别建立pg_class、Pg_attribute、Pg-proc、Pg-type及其索引的RelationData 结构，加人到RelCache
+上的Hash表中，并重写pg_intermal.init文件。
+当RelCache初始化完成后，我们就可以使用它来查找表的模式信息。RelCache的主要操作
+包括：
+（1）插人新打开的表
+当打开新的表时，要把它的RelationData加人到RelCache中。该操作通过宏RelationCacheInsert
+来实现：首先，根据关系表OID在Hash表中找到对应的位置，调用函数hash_search，指定查询模
+式为HASH_ENTER，该模式下若发现OID对应的Hash桶已存在，则返回其指针；否则创建一个新
+的空Hash桶，返回其指针。然后将返回的指针强制转换为RelldCacheEnt（数据结构3.21），然后
+把打开表的RelationData赋值给reldesc字段。

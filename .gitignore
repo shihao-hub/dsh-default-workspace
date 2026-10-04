@@ -1,0 +1,71 @@
+# ==========================================
+# DeepSeek-Harness Workspace Git Ignore Rules
+# ==========================================
+
+# 1. 外部软链与 Junction 基础设施（绝对禁止递归索引或创建悬空 gitlink）
+dsh-local-plugins/
+dsh-local-plugins
+
+# 2. 媒体与音视频大文件（防止大文件拖垮 Git 仓库）
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.flv
+*.wmv
+*.webm
+*.mp3
+*.wav
+*.m4a
+*.aac
+*.flac
+
+# 3. 压缩包与二进制归档
+*.tar
+*.gz
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+*.bz2
+*.xz
+*.asar
+
+# 4. 可执行文件与系统库
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 5. Python 缓存与虚拟环境
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# 6. Node / Web 依赖与运行时
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+
+# 7. 操作系统与编辑器配置
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+.idea/
+.vscode/
+*.swp
+*~
+
+# 8. 临时日志与中间产物
+*.log
+*.tmp

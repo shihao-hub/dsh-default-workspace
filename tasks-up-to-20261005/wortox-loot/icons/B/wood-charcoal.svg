@@ -1,0 +1,7 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" data-icon="wood-charcoal">
+  <path d="M9.5 16.6 20.1 12.4l6.1 7.4-2.4 9.7-9.6 1.7-6.8-7.1z" fill="#7A5C2E" fill-opacity=".95" stroke="#B8873F" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M26.7 12.9l8.2-3.6 6.2 6.1-1 8-7.5 2.3-6.4-6z" fill="#7A5C2E" fill-opacity=".8" stroke="#B8873F" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M23.4 28.6l7.1-2.1 5 5.4-.7 7.2-7.4 2.3-5.6-5.7z" fill="#7A5C2E" fill-opacity=".95" stroke="#B8873F" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M12.4 20.3c2.2-.6 4.4-.6 6.6.2M28.6 15.1c2-.7 4-1.4 5.9-2.2M25.3 30.8c1.8-.5 3.6-.7 5.4-.6" fill="none" stroke="#8FA35A" stroke-width="1.2" stroke-linecap="round" opacity=".75"/>
+  <path d="M14.9 26.1c2-.8 3.8-1.1 5.3-1" fill="none" stroke="#E3B341" stroke-width="1.3" stroke-linecap="round" opacity=".6"/>
+</svg>

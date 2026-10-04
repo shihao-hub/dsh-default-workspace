@@ -1,0 +1,131 @@
+{
+ "ok": true,
+ "targetId": "544874B11334D608FEBB684D57E96033",
+ "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.53 Safari/537.36",
+ "steps": [
+  {
+   "warm": "抖音精选电脑版 - 抖音旗下优质视频平台 | https://www.douyin.com/jingxuan"
+  }
+ ],
+ "data": {
+  "url": "https://www.douyin.com/search/%E7%AD%89%E5%BE%85%E7%BB%93%E6%9E%9C%E7%9A%84%E6%97%A5%E5%AD%90?type=video",
+  "title": "发现更多精彩视频 - 抖音搜索",
+  "text": "精选\n推荐\nAI抖音\n关注\n朋友\n22\n我的\n直播\n放映厅\n短剧\n小游戏\n下载抖音精选\n2026 © 抖音\n京ICP备16016397号-3\n京公网安备11010802050006号\n电子营业执照\n信息网络传播视听节目许可证 0126733\n广播电视节目制作经营许可证 （京）字第11313号\n增值电信业务经营许可证 京B2-20170846\n网络文化经营许可证 京网文〔2025〕0181-061号\n互联网宗教信息服务许可证 京（2025）0000017\n药品医疗器械网络信息服务备案 （京）网药械信息备字（2023）第00570号\n互联网新闻信息服务许可证 11220230001\n（京）人服证字〔2026〕第0600005023号\n网络谣言曝光台\n网上有害信息举报\n违法和不良信息举报 400-140-2108 feedback@douyin.com\n算法推荐专项举报 sfjubao@bytedance.com\n体育饭圈专项举报 tyfq@bytedance.com\n广告投放\n用户服务协议\n隐私政策\n账号找回\n联系我们\n加入我们\n友情链接\n站点地图\n下载抖音\n抖音电商\n搜索\n\n充值\n\n客户端\n\n壁纸\n\n通知\n\n消息\n\n投稿\n\n综合\n视频\n用户\n直播\n筛选",
+  "anchors": [
+   [
+    "https://www.douyin.com/jingxuan",
+    ""
+   ],
+   [
+    "https://www.douyin.com/jingxuan?from_nav=1",
+    "精选"
+   ],
+   [
+    "https://www.douyin.com/?recommend=1&from_nav=1",
+    "推荐"
+   ],
+   [
+    "https://www.douyin.com/aisearch?from_nav=1",
+    "AI抖音"
+   ],
+   [
+    "https://www.douyin.com/follow?from_nav=1",
+    "关注"
+   ],
+   [
+    "https://www.douyin.com/friend?from_nav=1",
+    "朋友 22"
+   ],
+   [
+    "https://www.douyin.com/user/self?from_nav=1",
+    "我的"
+   ],
+   [
+    "https://live.douyin.com/?from_nav=1",
+    "直播"
+   ],
+   [
+    "https://www.douyin.com/vs?from_nav=1",
+    "放映厅"
+   ],
+   [
+    "https://www.douyin.com/series?from_nav=1",
+    "短剧"
+   ],
+   [
+    "https://www.douyin.com/microgame?from_nav=1",
+    "小游戏"
+   ],
+   [
+    "https://beian.miit.gov.cn/",
+    "京ICP备16016397号-3"
+   ],
+   [
+    "https://beian.mps.gov.cn/",
+    "京公网安备11010802050006号"
+   ],
+   [
+    "https://zzlz.gsxt.gov.cn/businessCheck/verifKey.do",
+    "电子营业执照"
+   ],
+   [
+    "https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/d1cb34abe8ebb5600b51bac36ce3247f.jpg",
+    "（京）人服证字〔2026〕第0600005023号"
+   ],
+   [
+    "https://www.piyao.org.cn/yybgt/index.htm",
+    "网络谣言曝光台"
+   ],
+   [
+    "https://www.12377.cn/",
+    "网上有害信息举报"
+   ],
+   [
+    "https://www.oceanengine.com/resource/douyin",
+    "广告投放"
+   ],
+   [
+    "https://www.douyin.com/agreements/?id=6773906068725565448",
+    "用户服务协议"
+   ],
+   [
+    "https://www.douyin.com/agreements/?id=6773901168964798477",
+    "隐私政策"
+   ],
+   [
+    "https://www.douyin.com/recovery_account/",
+    "账号找回"
+   ],
+   [
+    "https://www.douyin.com/aboutus/",
+    "联系我们"
+   ],
+   [
+    "https://www.douyin.com/friend_links",
+    "友情链接"
+   ],
+   [
+    "https://www.douyin.com/htmlmap/hotauthor_0_1",
+    "站点地图"
+   ],
+   [
+    "https://www.douyin.com/downloadpage/pc",
+    "下载抖音"
+   ],
+   [
+    "https://mix.jinritemai.com/falcon/mix_page/index.html",
+    "抖音电商"
+   ],
+   [
+    "https://www.douyin.com/search/%E7%AD%89%E5%BE%85%E7%BB%93%E6%9E%9C%E7%9A%84%E6%97%A5%E5%AD%90?type=video",
+    "客户端"
+   ],
+   [
+    "https://www.douyin.com/user/self",
+    ""
+   ]
+  ],
+  "aweme_ids": [],
+  "html_len": 375716
+ }
+}

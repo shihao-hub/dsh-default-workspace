@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MP4 Video Downloader</title>
+    <meta name="description" content="This is a static video online downloader that relies on the FetchV extension. It can download various types of static videos and audios, such as mp4, mp3, webm, flv, etc.">
+        <link rel="alternate" hreflang="x-default" href="https://fetchv.net/videodownloader">
+        <link rel="alternate" hreflang="en" href="https://fetchv.net/videodownloader">
+        <link rel="alternate" hreflang="nl" href="https://fetchv.net/nl/videodownloader">
+        <link rel="alternate" hreflang="vi" href="https://fetchv.net/vi/videodownloader">
+        <link rel="alternate" hreflang="es" href="https://fetchv.net/es/videodownloader">
+        <link rel="alternate" hreflang="pt" href="https://fetchv.net/pt/videodownloader">
+        <link rel="alternate" hreflang="de" href="https://fetchv.net/de/videodownloader">
+        <link rel="alternate" hreflang="fr" href="https://fetchv.net/fr/videodownloader">
+        <link rel="alternate" hreflang="it" href="https://fetchv.net/it/videodownloader">
+        <link rel="alternate" hreflang="no" href="https://fetchv.net/no/videodownloader">
+        <link rel="alternate" hreflang="fi" href="https://fetchv.net/fi/videodownloader">
+        <link rel="alternate" hreflang="sv" href="https://fetchv.net/sv/videodownloader">
+        <link rel="alternate" hreflang="da" href="https://fetchv.net/da/videodownloader">
+        <link rel="alternate" hreflang="el" href="https://fetchv.net/el/videodownloader">
+        <link rel="alternate" hreflang="tr" href="https://fetchv.net/tr/videodownloader">
+        <link rel="alternate" hreflang="ru" href="https://fetchv.net/ru/videodownloader">
+        <link rel="alternate" hreflang="hi" href="https://fetchv.net/hi/videodownloader">
+        <link rel="alternate" hreflang="zh-CN" href="https://fetchv.net/zh-cn/videodownloader">
+        <link rel="alternate" hreflang="th" href="https://fetchv.net/th/videodownloader">
+        <link rel="alternate" hreflang="ko" href="https://fetchv.net/ko/videodownloader">
+        <link rel="alternate" hreflang="ro" href="https://fetchv.net/ro/videodownloader">
+        <link rel="alternate" hreflang="pl" href="https://fetchv.net/pl/videodownloader">
+        <link rel="alternate" hreflang="zh-TW" href="https://fetchv.net/zh-tw/videodownloader">
+        <link rel="alternate" hreflang="ga" href="https://fetchv.net/ga/videodownloader">
+        <link rel="alternate" hreflang="et" href="https://fetchv.net/et/videodownloader">
+        <link rel="alternate" hreflang="bg" href="https://fetchv.net/bg/videodownloader">
+        <link rel="alternate" hreflang="cs" href="https://fetchv.net/cs/videodownloader">
+        <link rel="alternate" hreflang="ms" href="https://fetchv.net/ms/videodownloader">
+        <link rel="alternate" hreflang="sk" href="https://fetchv.net/sk/videodownloader">
+        <link rel="alternate" hreflang="hu" href="https://fetchv.net/hu/videodownloader">
+        <link rel="alternate" hreflang="id" href="https://fetchv.net/id/videodownloader">
+        <link rel="alternate" hreflang="tl" href="https://fetchv.net/fil/videodownloader">
+        <link rel="alternate" hreflang="pt-BR" href="https://fetchv.net/pt-br/videodownloader">
+        <link rel="alternate" hreflang="pt-PT" href="https://fetchv.net/pt-pt/videodownloader">
+        <link rel="alternate" hreflang="ja" href="https://fetchv.net/ja/videodownloader">
+        <link href="/static/bootstrap-5.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="/static/bootstrap-5.3.1/icons/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/static/style.css" rel="stylesheet">
+<script src="/static/bootstrap-5.3.1/js/bootstrap.bundle.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRM4KE0V0H"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-HRM4KE0V0H');
+</script>
+    <style>
+        @media (min-width: 576px) {
+            .option-label {
+                width: 200px;
+            }
+            .filename-input {min-width: 600px;}
+        }
+        @media (min-width: 992px) {
+            .gads-middle {width: 360px; margin-right: 10px;}
+        }
+        ins.adsbygoogle[data-ad-status="unfilled"] {
+            display: none !important;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+<header class="container-xxl py-4">
+    <div class="d-flex justify-content-between align-items-center">
+
+        <a href="/" class="d-flex align-items-center text-bg-purple text-decoration-none px-2 py-1 px-sm-3 py-sm-2 rounded-pill opacity-50 shadow-sm">
+            <img src="/static/images/logo.png" width="40" height="40">
+            <span class="display-6 fw-bolder ps-1">FetchV</span>
+        </a>
+        <nav>
+            <div class="offcanvas offcanvas-start fs-5" tabindex="-1" id="offcanvasNav">
+                <div class="mx-3 py-2 d-md-none text-end">
+                    <button data-bs-dismiss="offcanvas" class="btn btn-close"></button>
+                </div>
+                <ul class="list-unstyled d-md-flex justify-content-md-end p-3 p-md-0 mb-0">
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3 active" href="/">
+                            <span>Home</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0 position-relative">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3">
+                            <span>Web Store</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                        <ul class="sub-menu list-unstyled ps-5 ps-md-0 overflow-hidden mb-0" style="z-index:1024;">
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd">
+                                    <span class="text-nowrap">Chrome</span>
+                                    <span><i class="bi bi-browser-chrome"></i></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik">
+                                    <span>Edge</span>
+                                    <span><i class="bi bi-browser-edge"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/feedback">
+                            <span>Feedback</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li id="navEnd" class="">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/blog">
+                            <span class="nav-text">Blog</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <button id="offcanvasNavToggle" class="btn btn-lg btn-light d-md-none"><i class="bi bi-list"></i></button>
+        </nav>
+    </div>
+</header>
+<script>
+    if (navigator?.platform.indexOf("Win") > -1) {
+        if (location.pathname.startsWith('/zh-cn')) {
+            const $navEnd = document.getElementById('navEnd');
+            const $newNav = $navEnd.cloneNode(true);
+            const $newNavLink = $newNav.querySelector('a');
+            const $newNavText = $newNav.querySelector('.nav-text');
+            $newNavLink.setAttribute('href', 'https://efetch.net/cn');
+            $newNavLink.setAttribute('target', '_blank');
+            $newNavText.innerText = '桌面版(EFetch)';
+            $navEnd.insertAdjacentElement('afterend', $newNav);
+            $navEnd.className = 'me-md-4 mb-2 mb-md-0';
+        }
+    }
+</script>
+<div class="container-xxl pb-5">
+    <div class="text-center mb-1 mb-md-3 gads gads-top">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+                crossorigin="anonymous"></script>
+        <!-- FetchV_Top -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1805776847890085"
+             data-ad-slot="6269426759"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <div id="backupad"></div>
+    </div>
+    <div class="bg-white border rounded-3 overflow-hidden shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center p-2 border-bottom border-dark-subtle bg-dark-subtle text-dark-emphasis">
+            <span class="fs-4"><i class="bi bi-collection-play"></i></span>
+            <h1 class="fs-5 fw-light mb-0">MP4 Video Downloader</h1>
+        </div>
+        <div id="container" class="py-4 px-3 d-flex flex-column justify-content-center align-items-center">
+            <div id="UILoading" class="py-4 d-flex flex-column align-items-center justify-content-center placeholder-glow">
+                <div class="placeholder rounded-3" style="width: 80px; height: 80px; margin-bottom: 25px;"></div>
+                <div class="mb-4 placeholder rounded-pill" style="height: 20px; min-width: 350px;"></div>
+                <div class="rounded-pill placeholder" style="width: 290px; height: 48px"></div>
+            </div>
+            <div id="UIInstall" class="py-4 text-center d-none w-100">
+                <span class="display-1 text-purple"><i class="bi bi-puzzle-fill"></i></span>
+                <h5 class="fw-light mb-4 fs-6">The MP4 Video Downloader requires the installation of a browser extension to work.</h5>
+                <a id="chromeInstall" class="d-none btn btn-lg btn-success rounded-pill" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd"><i class="bi bi-browser-chrome"></i> Install/Update Extension</a>
+                <a id="edgeInstall" class="d-none btn btn-lg btn-primary rounded-pill" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik"><i class="bi bi-browser-edge"></i> Install/Update Extension</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex flex-column flex-lg-row justify-content-start">
+        <div class="py-2 text-muted flex-grow-1 order-lg-1">
+            <ul class="list-circle list-unstyled">
+                                <li>This tab is a static video downloader used to download MP4, WEBM, FLV, MP3, and other static videos and audios.</li>
+                                <li>Please do not close this page during the download process! If you are interested in certain content on the page, you can open it in a new tab (hold down the Ctrl key and click the link).</li>
+                                <li>The more threads, the faster the speed. If the download is restricted due to excessive speed, please choose fewer download threads.</li>
+                            </ul>
+        </div>
+        <div class="order-lg-0">
+            <div class="gads gads-middle">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+                        crossorigin="anonymous"></script>
+                <!-- FetchV_Middle -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-1805776847890085"
+                     data-ad-slot="2390436350"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="bg-white py-5">
+    <div class="d-flex justify-content-center mb-4 border-bottom">
+        <h2 class="display-5 fw-bold mb-4 position-relative">
+            <span class="d-block position-absolute w-100 bottom-0 start-0 bg-danger-subtle" style="height: 18px;"></span>
+            <span class="position-relative">FAQ</span>
+        </h2>
+    </div>
+    <div class="container-xxl mb-4">
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why can't I play the downloaded video on my local device?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">This may be because the encoding format of the downloaded video is not supported by your local media player. For example, the HEVC (h.265) encoding in MP4 videos is not supported by many video players. We recommend using the VLC media player for playback.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why can't the extension detect videos on a certain website?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">FetchV can only detect generic video data. If the video data on the target website is processed in a special way, the extension will be unable to detect that video data.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">What causes slow download speeds?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">In most cases, download speeds range from 200KB/s to 20MB/s. The download speed depends on your network conditions and the target video. If you are unable to smoothly play the target video before downloading, it indicates a poor network connection to the target video. Additionally, try not to play the target video during the download process to reduce bandwidth usage.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why do download tasks automatically pause?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">Tasks automatically suspend when there are more than 30 error requests. Continuous error requests are usually due to your network being disconnected or the requests being rejected. You can wait a moment and then click the "Continue" button to try again.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Can I download multiple videos simultaneously?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">If you are downloading large videos, it is advisable to avoid doing so unless your computer has sufficient power and bandwidth. During the download, the extension caches data in this tab, utilizing your memory (released when closing the tab or saving the file to disk). The larger the video you download, the more memory it consumes. If your computer has insufficient memory, it may result in tab crashes. On the other hand, if you simultaneously download multiple large files and there is insufficient bandwidth and CPU performance allocation, it may also lead to task failures.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">What should I do if I encounter download errors?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">If you encounter download errors, it means that this downloader is unable to download the video for you. In this case, you can try using "Record Mode".</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Where are the downloaded videos saved?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">When you click the "Save" button, the file is by default saved in the browser's download directory. Normally, when saving a file, the browser prompts you to choose the download folder. If this prompt does not appear, you can find the downloaded video file in your browser's download history.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why can't I download some websites that I used to be able to download from?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">There are various types of playback technologies for online videos. This static video downloader is only applicable to videos that use generic playback technologies. If the target video website has modified its video playback technology, this downloader may no longer be suitable for downloading that video. You can try using "Record Mode" to download it.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why am I downloading video segments instead of the complete video?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">Some videos are divided into several small segments when making the request. You will see a series of segment URLs in the extension's pop-up window, indicating that you cannot download the complete video. However, you can use "Record Mode" to download it in its entirety.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why does the saved video only have audio without video, or video without audio?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">This means that the video's audio is loaded separately. You can use "Record Mode" to download the video in its entirety, or separately download the audio and video to your computer, then use other tools to merge them.</div>
+        </div>
+            </div>
+</div>
+
+
+<div class="modal fade" id="review" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0 pb-1">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="display-5 pe-3 text-purple"><i class="bi bi-emoji-smile"></i></div>
+                    <div>Can this application assist you? If it is helpful, could you give us a review?</div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button id="reviewBtn" type="button" class="btn btn-outline-success"><i class="bi bi-pencil-square"></i> Give a review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>window.FVLANG = JSON.parse(`{"cancel_modal_title":"Tip","cancel_modal_close":"Close","cancel_modal_confirm":"Confirm","cancel_modal_content":"Are you sure you want to cancel this task? The data will not be recoverable after cancellation!","failed":"Failed","paused":"Paused","downloading":"Downloading","completed":"Completed","waiting":"Waiting"}`);</script>
+<div id="panel" class="d-none w-100">
+    <div selector="no-data" class="py-5 text-center">
+        <span class="display-1 text-warning-emphasis"><i class="bi bi-database-fill-x"></i></span>
+        <h5 class="pt-3 fw-light">No data detected by the application!</h5>
+    </div>
+    <div selector="has-data">
+        <div class="d-flex justify-content-center align-items-center flex-column">
+            <div class="position-relative">
+                <span class="display-1"><i class="bi bi-file-earmark"></i></span>
+                <span selector="file-type" class="position-absolute bottom-0 end-0 px-2 py-1 mb-3 rounded-2 shadow-sm text-bg-purple">MP4</span>
+            </div>
+            <span selector="quality" class="mb-2 fw-light">--</span>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mb-3 mx-auto" style="max-width: 860px; min-width: 120px;">
+            <span class="text-nowrap badge text-bg-secondary me-2">File Name</span>
+            <div selector="filename" class="text-black-50 text-truncate me-1"></div>
+
+            <div class="flex-grow-1 flex-sm-grow-0">
+                <input selector="filename-input" type="text" class="filename-input form-control d-none" value="">
+            </div>
+
+            <button selector="rename" class="tooltip-toggle btn btn-light" data-bs-title="Rename" data-bs-placement="right"><i class="bi bi-pencil-square"></i></button>
+            <button selector="rename-confirm" class="tooltip-toggle btn btn-light ms-2 d-none" data-bs-title="Confirm" data-bs-placement="right"><i class="bi bi-check-lg"></i></button>
+            <button selector="open-source" class="btn ms-1 d-none"><i class="bi bi-box-arrow-up-right"></i></button>
+        </div>
+
+        <div class="progress mx-auto" role="progressbar" style="height: 40px; max-width: 760px;">
+            <div selector="progress" class="progress-bar progress-bar-striped progress-bar-animated fs-6 fw-light" style="width: 0">0%</div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center fs-5 pb-3 fw-light">
+            <div class="text-end" style="min-width: 120px;"><span selector="size">0MB</span>/<span selector="total">0MB</span></div>
+            <span selector="speed" class="ms-3">0KB/s</span>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-center align-items-center mb-4">
+            <button selector="cancel" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 text-danger mb-2 mb-sm-0" data-bs-title="Cancel" data-bs-placement="bottom">
+                <i class="bi bi-x-circle"></i>
+            </button>
+
+            <button selector="start" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 mb-2 mb-sm-0" data-bs-title="Resume Download" data-bs-placement="bottom">
+                <i class="bi bi-caret-right-fill"></i>
+            </button>
+
+            <button selector="pause" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 mb-2 mb-sm-0" data-bs-title="Pause" data-bs-placement="bottom">
+                <i class="bi bi-pause-fill"></i>
+            </button>
+
+            <button selector="save" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 text-success mb-2 mb-sm-0" data-bs-title="Save" data-bs-placement="bottom">
+                <i class="bi bi-save-fill"></i>
+            </button>
+
+            <button selector="options" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 mb-2 mb-sm-0" data-bs-title="Settings" data-bs-placement="bottom">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+
+            <button selector="downloads-list" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 text-success mb-2 mb-sm-0 d-none" data-bs-title="Open downloads list" data-bs-placement="bottom">
+                <i class="bi bi-folder-symlink"></i>
+            </button>
+        </div>
+
+        <div selector="collapse-option" class="collapse mb-4 mx-auto" style="max-width: 760px;">
+            <div class="px-3 py-4 shadow rounded-3 border border-light-subtle position-relative">
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Download Threads</div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-end justify-content-sm-start border-bottom py-1">
+                        <div class="fs-4 me-3">
+                            <span selector="thread" data-thread="1" class="me-1 cursor-pointer"><i class="bi bi-1-square-fill"></i></span>
+                            <span selector="thread" data-thread="2" class="me-1 cursor-pointer"><i class="bi bi-2-square-fill"></i></span>
+                            <span selector="thread" data-thread="3" class="me-1 cursor-pointer text-danger"><i class="bi bi-3-square-fill"></i></span>
+                            <span selector="thread" data-thread="4" class="me-1 cursor-pointer"><i class="bi bi-4-square-fill"></i></span>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="More threads may speed up the process (depending on your device and the bandwidth of the remote server) but will consume more bandwidth and system resources. Choose accordingly." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Auto Save</div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-end justify-content-sm-start border-bottom py-2">
+                        <div class="me-3">
+                            <label class="form-check form-switch ps-0 mb-0 border-2">
+                                <input selector="auto-save" class="form-check-input fs-3 float-none ms-0 mt-0 cursor-pointer" type="checkbox" role="switch">
+                            </label>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="Automatically initiate the save when the download is complete." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Clear Cache</div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-end justify-content-sm-start border-bottom py-2">
+                        <div class="me-3">
+                            <label class="form-check form-switch ps-0 mb-0 border-2">
+                                <input selector="clear-cache" class="form-check-input fs-3 float-none ms-0 mt-0 cursor-pointer" type="checkbox" role="switch">
+                            </label>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="After saving the file, clear the cache" data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Tab Progress</div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-end justify-content-sm-start border-bottom py-2">
+                        <div class="me-3">
+                            <label class="form-check form-switch ps-0 mb-0 border-2">
+                                <input selector="tab-progress" class="form-check-input fs-3 float-none ms-0 mt-0 cursor-pointer" type="checkbox" role="switch">
+                            </label>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="When enabled, the progress will be displayed on the current tab." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">File Naming</div>
+                    <div class="flex-grow-1 border-bottom py-2">
+                        <div class="d-flex flex-wrap justify-content-end justify-content-sm-start align-items-center border-2">
+
+                            <label class="d-flex align-items-center me-4 mb-2 mb-sm-0">
+                                <input selector="filename-type" class="form-check-input fs-4 mt-0" type="radio" name="filenameType" value="title">
+                                <span class="ps-2">Webpage Title</span>
+                            </label>
+
+                            <label class="d-flex align-items-center me-4">
+                                <input selector="filename-type" class="form-check-input fs-4 mt-0" type="radio" name="filenameType" value="filename">
+                                <span class="ps-2">Resource Filename</span>
+                            </label>
+
+                        </div>
+                    </div>
+                </div>
+
+                <button selector="options-close" class="btn btn-close position-absolute top-0 end-0 mt-1 me-1"></button>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p selector="clear-cache-status" class="d-none">Cache will be cleared(<span selector="clear-cache-timer">0</span>)</p>
+            <p selector="clear-cache-end" class="d-none">Cache cleared</p>
+            <p selector="error-pause" class="text-warning-emphasis d-none"><span selector="request-error-detail"></span> / The task has been automatically paused due to more than 30 error requests. Try reducing the download threads and resume.</p>
+            <p selector="error" class="text-danger d-none"></p>
+        </div>
+    </div>
+</div>
+<script src="/extensions/dist/mp4-loader.js"></script>
+<script src="/static/downloader.js"></script>
+<footer class="pt-5 pb-2 text-dark-emphasis bg-dark-subtle">
+    <div class="container-xxl py-3 py-sm-5 mb-sm-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xxl-4">
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Browser support</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1">Chromium 92+</li>
+                    <li class="mb-1">Google Chrome 92+</li>
+                    <li class="mb-1">Microsoft Edge 92+</li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Information</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/privacy-policy" rel="nofollow">Privacy policy</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/terms-of-service" rel="nofollow">Terms of service</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/feedback">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Function</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/m3u8downloader">M3U8 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/videodownloader">MP4 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/bufferrecorder">Video Buffering Recorder</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Interactive</span>
+                    </h5>
+                </div>
+                <a class="display-6 me-2" href=""><i class="bi bi-google"></i></a>
+                <a class="display-6" href="https://www.reddit.com/r/chrome_extensions/comments/1auj9vm/hls_m3u8_video_downloader_chrome_extensions/"><i class="bi bi-reddit"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="border-top mt-5 py-3 border-dark-subtle">
+        <div class="container-xxl text-black-50 d-flex justify-content-between align-items-center">
+            <span>&copy;fetchv.net. All rights reserved</span>
+                        <button id="langSwitchToggle" class="btn btn-light"><span class="me-1">EN</span><i class="bi bi-globe"></i></button>
+            <div id="langSwitch" class="offcanvas offcanvas-end" tabindex="-1" style="max-width: 200px;">
+                <div class="offcanvas-header pb-0">
+                    <span></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body narrow-scrollbar">
+                                        <a class="d-block mb-2" href="/videodownloader">English</a>
+                                        <a class="d-block mb-2" href="/nl/videodownloader">Nederlands</a>
+                                        <a class="d-block mb-2" href="/vi/videodownloader">Tiếng Việt</a>
+                                        <a class="d-block mb-2" href="/es/videodownloader">Espa&ntilde;ol</a>
+                                        <a class="d-block mb-2" href="/pt/videodownloader">Portugu&ecirc;s</a>
+                                        <a class="d-block mb-2" href="/de/videodownloader">Deutsche</a>
+                                        <a class="d-block mb-2" href="/fr/videodownloader">Fran&ccedil;ais</a>
+                                        <a class="d-block mb-2" href="/it/videodownloader">Italiano</a>
+                                        <a class="d-block mb-2" href="/no/videodownloader">Norsk</a>
+                                        <a class="d-block mb-2" href="/fi/videodownloader">Suomalainen</a>
+                                        <a class="d-block mb-2" href="/sv/videodownloader">Svenska</a>
+                                        <a class="d-block mb-2" href="/da/videodownloader">Dansk</a>
+                                        <a class="d-block mb-2" href="/el/videodownloader">&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;ά</a>
+                                        <a class="d-block mb-2" href="/tr/videodownloader">T&uuml;rk</a>
+                                        <a class="d-block mb-2" href="/ru/videodownloader">русский</a>
+                                        <a class="d-block mb-2" href="/hi/videodownloader">हिंदी</a>
+                                        <a class="d-block mb-2" href="/zh-cn/videodownloader">简体中文</a>
+                                        <a class="d-block mb-2" href="/th/videodownloader">ไทย</a>
+                                        <a class="d-block mb-2" href="/ko/videodownloader">한국어</a>
+                                        <a class="d-block mb-2" href="/ro/videodownloader">Rom&acirc;nă</a>
+                                        <a class="d-block mb-2" href="/pl/videodownloader">Polskie</a>
+                                        <a class="d-block mb-2" href="/zh-tw/videodownloader">繁體中文</a>
+                                        <a class="d-block mb-2" href="/ga/videodownloader">Gaeilge</a>
+                                        <a class="d-block mb-2" href="/et/videodownloader">eesti keel</a>
+                                        <a class="d-block mb-2" href="/bg/videodownloader">български</a>
+                                        <a class="d-block mb-2" href="/cs/videodownloader">če&scaron;tina</a>
+                                        <a class="d-block mb-2" href="/ms/videodownloader">Melayu</a>
+                                        <a class="d-block mb-2" href="/sk/videodownloader">slovensk&yacute;</a>
+                                        <a class="d-block mb-2" href="/hu/videodownloader">Magyar</a>
+                                        <a class="d-block mb-2" href="/id/videodownloader">Bahasa Indonesia</a>
+                                        <a class="d-block mb-2" href="/fil/videodownloader">Filipino</a>
+                                        <a class="d-block mb-2" href="/pt-br/videodownloader">Portugu&ecirc;s (Brasil)</a>
+                                        <a class="d-block mb-2" href="/pt-pt/videodownloader">Portugu&ecirc;s (Portugal)</a>
+                                        <a class="d-block mb-2" href="/ja/videodownloader">日本語</a>
+                                    </div>
+            </div>
+                    </div>
+    </div>
+</footer>
+<script>
+    (() => {
+        const $offcanvasNavToggle = document.getElementById('offcanvasNavToggle');
+        const $langSwitchToggle = document.getElementById('langSwitchToggle');
+        const offcanvasNav = new bootstrap.Offcanvas('#offcanvasNav');
+        $offcanvasNavToggle.onclick = () => {
+            offcanvasNav.toggle();
+        };
+        if ($langSwitchToggle) {
+            const langSwitch = new bootstrap.Offcanvas('#langSwitch');
+            $langSwitchToggle.onclick = () => {
+                langSwitch.toggle();
+            }
+        }
+    })();
+</script>
+</body>
+</html>

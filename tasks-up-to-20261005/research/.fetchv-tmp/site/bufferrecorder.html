@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Video Buffering Recorder</title>
+    <meta name="description" content="This is a video buffer recorder that converts the playback buffer data of web videos into MP4 videos. It can download streaming videos and web live videos.">
+        <link rel="alternate" hreflang="x-default" href="https://fetchv.net/bufferrecorder">
+        <link rel="alternate" hreflang="en" href="https://fetchv.net/bufferrecorder">
+        <link rel="alternate" hreflang="nl" href="https://fetchv.net/nl/bufferrecorder">
+        <link rel="alternate" hreflang="vi" href="https://fetchv.net/vi/bufferrecorder">
+        <link rel="alternate" hreflang="es" href="https://fetchv.net/es/bufferrecorder">
+        <link rel="alternate" hreflang="pt" href="https://fetchv.net/pt/bufferrecorder">
+        <link rel="alternate" hreflang="de" href="https://fetchv.net/de/bufferrecorder">
+        <link rel="alternate" hreflang="fr" href="https://fetchv.net/fr/bufferrecorder">
+        <link rel="alternate" hreflang="it" href="https://fetchv.net/it/bufferrecorder">
+        <link rel="alternate" hreflang="no" href="https://fetchv.net/no/bufferrecorder">
+        <link rel="alternate" hreflang="fi" href="https://fetchv.net/fi/bufferrecorder">
+        <link rel="alternate" hreflang="sv" href="https://fetchv.net/sv/bufferrecorder">
+        <link rel="alternate" hreflang="da" href="https://fetchv.net/da/bufferrecorder">
+        <link rel="alternate" hreflang="el" href="https://fetchv.net/el/bufferrecorder">
+        <link rel="alternate" hreflang="tr" href="https://fetchv.net/tr/bufferrecorder">
+        <link rel="alternate" hreflang="ru" href="https://fetchv.net/ru/bufferrecorder">
+        <link rel="alternate" hreflang="hi" href="https://fetchv.net/hi/bufferrecorder">
+        <link rel="alternate" hreflang="zh-CN" href="https://fetchv.net/zh-cn/bufferrecorder">
+        <link rel="alternate" hreflang="th" href="https://fetchv.net/th/bufferrecorder">
+        <link rel="alternate" hreflang="ko" href="https://fetchv.net/ko/bufferrecorder">
+        <link rel="alternate" hreflang="ro" href="https://fetchv.net/ro/bufferrecorder">
+        <link rel="alternate" hreflang="pl" href="https://fetchv.net/pl/bufferrecorder">
+        <link rel="alternate" hreflang="zh-TW" href="https://fetchv.net/zh-tw/bufferrecorder">
+        <link rel="alternate" hreflang="ga" href="https://fetchv.net/ga/bufferrecorder">
+        <link rel="alternate" hreflang="et" href="https://fetchv.net/et/bufferrecorder">
+        <link rel="alternate" hreflang="bg" href="https://fetchv.net/bg/bufferrecorder">
+        <link rel="alternate" hreflang="cs" href="https://fetchv.net/cs/bufferrecorder">
+        <link rel="alternate" hreflang="ms" href="https://fetchv.net/ms/bufferrecorder">
+        <link rel="alternate" hreflang="sk" href="https://fetchv.net/sk/bufferrecorder">
+        <link rel="alternate" hreflang="hu" href="https://fetchv.net/hu/bufferrecorder">
+        <link rel="alternate" hreflang="id" href="https://fetchv.net/id/bufferrecorder">
+        <link rel="alternate" hreflang="tl" href="https://fetchv.net/fil/bufferrecorder">
+        <link rel="alternate" hreflang="pt-BR" href="https://fetchv.net/pt-br/bufferrecorder">
+        <link rel="alternate" hreflang="pt-PT" href="https://fetchv.net/pt-pt/bufferrecorder">
+        <link rel="alternate" hreflang="ja" href="https://fetchv.net/ja/bufferrecorder">
+        <link href="/static/bootstrap-5.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="/static/bootstrap-5.3.1/icons/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/static/style.css" rel="stylesheet">
+<script src="/static/bootstrap-5.3.1/js/bootstrap.bundle.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HRM4KE0V0H"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-HRM4KE0V0H');
+</script>
+    <style>
+        @media (min-width: 576px) {
+            .option-label {
+                width: 200px;
+            }
+            .filename-input {min-width: 600px;}
+        }
+        @media (min-width: 992px) {
+            .gads-middle {width: 360px; margin-right: 10px;}
+        }
+        ins.adsbygoogle[data-ad-status="unfilled"] {
+            display: none !important;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+<header class="container-xxl py-4">
+    <div class="d-flex justify-content-between align-items-center">
+
+        <a href="/" class="d-flex align-items-center text-bg-purple text-decoration-none px-2 py-1 px-sm-3 py-sm-2 rounded-pill opacity-50 shadow-sm">
+            <img src="/static/images/logo.png" width="40" height="40">
+            <span class="display-6 fw-bolder ps-1">FetchV</span>
+        </a>
+        <nav>
+            <div class="offcanvas offcanvas-start fs-5" tabindex="-1" id="offcanvasNav">
+                <div class="mx-3 py-2 d-md-none text-end">
+                    <button data-bs-dismiss="offcanvas" class="btn btn-close"></button>
+                </div>
+                <ul class="list-unstyled d-md-flex justify-content-md-end p-3 p-md-0 mb-0">
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3 active" href="/">
+                            <span>Home</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0 position-relative">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3">
+                            <span>Web Store</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                        <ul class="sub-menu list-unstyled ps-5 ps-md-0 overflow-hidden mb-0" style="z-index:1024;">
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd">
+                                    <span class="text-nowrap">Chrome</span>
+                                    <span><i class="bi bi-browser-chrome"></i></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="d-flex justify-content-between align-items-center px-3 py-2" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik">
+                                    <span>Edge</span>
+                                    <span><i class="bi bi-browser-edge"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="me-md-4 mb-2 mb-md-0">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/feedback">
+                            <span>Feedback</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li id="navEnd" class="">
+                        <a class="d-flex justify-content-between align-items-center px-3 py-2 rounded-3" href="/blog">
+                            <span class="nav-text">Blog</span>
+                            <span class="d-md-none"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <button id="offcanvasNavToggle" class="btn btn-lg btn-light d-md-none"><i class="bi bi-list"></i></button>
+        </nav>
+    </div>
+</header>
+<script>
+    if (navigator?.platform.indexOf("Win") > -1) {
+        if (location.pathname.startsWith('/zh-cn')) {
+            const $navEnd = document.getElementById('navEnd');
+            const $newNav = $navEnd.cloneNode(true);
+            const $newNavLink = $newNav.querySelector('a');
+            const $newNavText = $newNav.querySelector('.nav-text');
+            $newNavLink.setAttribute('href', 'https://efetch.net/cn');
+            $newNavLink.setAttribute('target', '_blank');
+            $newNavText.innerText = '桌面版(EFetch)';
+            $navEnd.insertAdjacentElement('afterend', $newNav);
+            $navEnd.className = 'me-md-4 mb-2 mb-md-0';
+        }
+    }
+</script>
+<div class="container-xxl pb-5">
+    <div class="text-center mb-1 mb-md-3 gads gads-top">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+                crossorigin="anonymous"></script>
+        <!-- FetchV_Top -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1805776847890085"
+             data-ad-slot="6269426759"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <div id="backupad"></div>
+    </div>
+    <div class="bg-white border rounded-3 overflow-hidden shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center p-2 border-bottom border-dark-subtle bg-dark-subtle text-dark-emphasis">
+            <span class="fs-4"><i class="bi bi-vinyl"></i></span>
+            <h1 class="fs-5 fw-light mb-0">Video Buffering Recorder</h1>
+        </div>
+        <div id="container" class="py-4 px-3 d-flex flex-column justify-content-center align-items-center">
+            <div id="UILoading" class="py-4 d-flex flex-column align-items-center justify-content-center placeholder-glow">
+                <div class="placeholder rounded-3" style="width: 80px; height: 80px; margin-bottom: 25px;"></div>
+                <div class="mb-4 placeholder rounded-pill" style="height: 20px; min-width: 350px;"></div>
+                <div class="rounded-pill placeholder" style="width: 290px; height: 48px"></div>
+            </div>
+            <div id="UIInstall" class="py-4 text-center d-none w-100">
+                <span class="display-1 text-purple"><i class="bi bi-puzzle-fill"></i></span>
+                <h5 class="fw-light mb-4 fs-6">The video buffer recorder requires the installation of a browser extension to function.</h5>
+                <a id="chromeInstall" class="d-none btn btn-lg btn-success rounded-pill" href="https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd"><i class="bi bi-browser-chrome"></i> Install/Update Extension</a>
+                <a id="edgeInstall" class="d-none btn btn-lg btn-primary rounded-pill" href="https://microsoftedge.microsoft.com/addons/detail/dbepbhhcmhodojepbagfppgpieeplpik"><i class="bi bi-browser-edge"></i> Install/Update Extension</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex flex-column flex-lg-row justify-content-start">
+        <div class="py-2 text-muted flex-grow-1 order-lg-1">
+            <ul class="list-circle list-unstyled">
+                                <li>This tab is a video recording processor that receives and processes video data from the recording target.</li>
+                                <li>During the recording process, do not close this page or the video playback page. Keep the video playing. If you are interested in certain content on the page, open it in a new tab (Ctrl+click).</li>
+                                <li>To speed up the recording progress, you can drag the playback progress bar to the end of the video buffer progress to accelerate the buffering speed. You can also speed up the recording progress by using the playback speed control.</li>
+                                <li>This video buffer recorder cannot merge data of different resolutions. Please make sure to set a fixed resolution for playback instead of using automatic resolution to avoid generating data of different resolutions.</li>
+                                <li>This recorder is used to supplement the M3U8 downloader, converting the buffer data of the video into MP4. This is an experimental feature, and processing various types of video buffer data is a very complex task. If it does not meet your needs, please understand!</li>
+                            </ul>
+        </div>
+        <div class="order-lg-0">
+            <div class="gads gads-middle">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1805776847890085"
+                        crossorigin="anonymous"></script>
+                <!-- FetchV_Middle -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-1805776847890085"
+                     data-ad-slot="2390436350"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="bg-white py-5">
+    <div class="d-flex justify-content-center mb-4 border-bottom">
+        <h2 class="display-5 fw-bold mb-4 position-relative">
+            <span class="d-block position-absolute w-100 bottom-0 start-0 bg-danger-subtle" style="height: 18px;"></span>
+            <span class="position-relative">FAQ</span>
+        </h2>
+    </div>
+    <div class="container-xxl mb-4">
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">How can I speed up the recording progress?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">The faster the video buffer, the faster the recording progress. Therefore, you can speed up the buffering progress of the target video to accelerate the recording progress. For example, you can drag the playback progress bar to the end of the video buffer progress to accelerate the buffering speed. You can also use the playback speed control to speed up the buffering progress.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why is it always in a "waiting for response" state?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">This is because the tab is not receiving data. Please make sure the target video is playing. If the video is playing and the task is still unresponsive, close the tab and try again. If it still doesn't work, it may be because the video is not a standard streaming video, and the buffer cannot be recorded. This extension cannot guarantee the recording of all videos. Additionally, it's possible that your browser version does not support this feature. It is recommended to use the latest version of "Chrome browser".</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why does it still show "recording" after the video buffer or playback is complete?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">The completion signal is only sent when the webpage containing the target video is redirected, refreshed, or closed. In fact, the recording is completed when the video buffering is completed, and you can click the save video button at any time.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why is the video divided into multiple segments during the recording process?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">For streaming videos, certain players switch resolutions based on your network status. Data of different resolutions cannot be merged into one video, so they are divided into separate segments. If the target video provides adjustable resolution options, it is recommended to choose a fixed resolution option before recording instead of the default automatic resolution to minimize the segmentation of the video.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Can I record multiple videos simultaneously?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">Yes, but it requires sufficient memory on your computer because the recording buffer temporarily borrows memory from your computer. The longer and higher quality the videos you record, the more memory it will occupy.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Can I record live streams?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">Yes, but it does not guarantee that all live streams can be successfully recorded. It should be noted that when the video reaches a certain size, the program will automatically split it into chunks. Please save the chunks as soon as possible to free up memory, otherwise recording may fail due to insufficient memory.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why can't some videos be played after saving to disk?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">Before saving the video to disk, you should first play the preview video of the task. If it can be played normally, it means that the local player you are using cannot parse the video data. You can try using other video players, and it is recommended to use the "VLC" video player. If the preview video of the task cannot be played properly, it means that the video cannot be recorded.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">How can I record clearer videos?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">If the target video provides multiple resolution options, select a higher resolution option during the recording to obtain video data of corresponding clarity.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Where are the downloaded videos saved?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">When you click the "Save" button, the file is by default saved in the browser's download directory. Normally, when saving a file, the browser will pop up a window for you to choose the download folder. If this window does not appear, you can find the downloaded video file in the browser's download history.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Why does the loading icon keep showing and the task won't start?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">If you are using this extension for the first time, it needs to load FFmpeg (about 9MB) before the task can start, which may take some time. If your network connection to the server is poor, it may prevent the task from starting. In this case, you can try restarting the download task.</div>
+        </div>
+                <div class="faq-collapse">
+            <div class="faq-header d-flex justify-content-start align-items-center py-3 border-bottom border-dark-subtle cursor-pointer">
+                <span class="text-warning fs-4 me-2 d-none d-sm-block"><i class="bi bi-question-circle-fill"></i></span>
+                <h5 class="flex-grow-1 mb-0 fw-light">Does FetchV collect my video information or save copies of the videos I download?</h5>
+                <span class="collapse-dash fs-4 d-none"><i class="bi bi-chevron-up"></i></span>
+                <span class="collapse-plus fs-4"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-body py-3 text-muted collapse multi-collapse">No! All of FetchV's work is done within your browser, and it will not upload your video information or video copies to anywhere. Your personal privacy will be protected, and you can use it with confidence!</div>
+        </div>
+            </div>
+</div>
+
+
+<div class="modal fade" id="review" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0 pb-1">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="display-5 pe-3 text-purple"><i class="bi bi-emoji-smile"></i></div>
+                    <div>Can this application assist you? If it is helpful, could you give us a review?</div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button id="reviewBtn" type="button" class="btn btn-outline-success"><i class="bi bi-pencil-square"></i> Give a review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>window.FVLANG = JSON.parse(`{"cancel_modal_title":"Tip","cancel_modal_close":"Close","cancel_modal_confirm":"Confirm","cancel_modal_content":"Are you sure you want to cancel this task? The data will not be recoverable after cancellation!","failed":"Failed","paused":"Paused","downloading":"Downloading","completed":"Completed","waiting":"Waiting"}`);</script>
+<div id="panel" class="d-none w-100">
+    <div selector="no-data" class="py-5 text-center d-none">
+        <span class="display-1 text-warning-emphasis"><i class="bi bi-database-fill-x"></i></span>
+        <h5 class="pt-3 fw-light">No data detected by the application!</h5>
+    </div>
+    <div selector="has-data">
+        <div class="d-flex justify-content-center align-items-center flex-column">
+            <div selector="icon-completed" class="display-1 text-success pb-2 d-none"><i class="bi bi-check-circle-fill"></i></div>
+            <div selector="icon-error" class="display-1 text-danger pb-2 d-none"><i class="bi bi-exclamation-circle"></i></div>
+            <div class="position-relative">
+                <img selector="icon-recording" width="150" height="150" src="/static/images/recording.svg">
+                <div class="position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-center align-items-center">
+                    <span selector="icon-mode" class="text-white fs-5"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center fs-5 fw-light">
+                <span selector="quality-size"></span>
+                <span selector="quality-rate" class="ms-1"></span>
+                <span selector="duration" class="text-center" style="min-width: 120px;"></span>
+                <span selector="size" style="min-width: 90px;"></span>
+
+            </div>
+        </div>
+
+        <div selector="preview" class="d-flex justify-content-center py-3 d-none">
+            <div class="ratio ratio-16x9" style="width: 250px">
+                <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center">
+                    <video selector="preview-video" class="w-100 h-100" controls style="object-fit: contain"></video>
+                </div>
+            </div>
+        </div>
+
+        <p selector="tip-error" class="text-danger text-center pt-2 d-none">Error: data error</p>
+        <p selector="tip-completed" class="text-success text-center pt-2 d-none">Completed</p>
+        <p selector="tip-waiting" class="text-info text-center pt-2 d-none">Waiting</p>
+
+
+        <div class="d-flex justify-content-center align-items-center mb-3 mx-auto" style="max-width: 860px; min-width: 120px;">
+            <span class="text-nowrap badge text-bg-secondary me-2">File Name</span>
+            <div selector="filename" class="text-black-50 text-truncate me-1"></div>
+
+            <div class="flex-grow-1 flex-sm-grow-0">
+                <input selector="filename-input" type="text" class="filename-input form-control d-none" value="">
+            </div>
+
+            <button selector="rename" class="tooltip-toggle btn btn-light" data-bs-title="Rename" data-bs-placement="right"><i class="bi bi-pencil-square"></i></button>
+            <button selector="rename-confirm" class="tooltip-toggle btn btn-light ms-2 d-none" data-bs-title="Confirm" data-bs-placement="right"><i class="bi bi-check-lg"></i></button>
+            <button selector="open-source" class="btn ms-1 d-none"><i class="bi bi-box-arrow-up-right"></i></button>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-center align-items-center mb-4 py-3">
+            <button selector="stop" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 mb-2 mb-sm-0" data-bs-title="Stop" data-bs-placement="bottom" disabled>
+                <i class="bi bi-stop-circle"></i>
+            </button>
+
+            <button selector="save" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 text-success mb-2 mb-sm-0" data-bs-title="Save" data-bs-placement="bottom" disabled>
+                <i class="bi bi-save-fill"></i>
+            </button>
+
+            <button selector="options" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 mb-2 mb-sm-0" data-bs-title="Settings" data-bs-placement="bottom">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+
+            <button selector="downloads-list" type="button" class="tooltip-toggle btn btn-lg btn-light mx-2 shadow-sm border-light-subtle fs-3 text-success mb-2 mb-sm-0 d-none" data-bs-title="Open downloads list" data-bs-placement="bottom">
+                <i class="bi bi-folder-symlink"></i>
+            </button>
+        </div>
+
+        <div selector="collapse-option" class="collapse mb-4 mx-auto" style="max-width: 760px;">
+            <div class="px-3 py-4 shadow rounded-3 border border-light-subtle position-relative">
+
+                <div selector="speedup-wrap" class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Playback Speed-up</div>
+                    <div class="flex-grow-1 d-flex align-items-center border-bottom justify-content-end justify-content-sm-start py-1">
+                        <div class="fs-4 me-3">
+                            <span selector="speedup" data-value="1" class="me-1 cursor-pointer text-danger"><i class="bi bi-1-square-fill"></i></span>
+                            <span selector="speedup" data-value="2" class="me-1 cursor-pointer"><i class="bi bi-2-square-fill"></i></span>
+                            <span selector="speedup" data-value="3" class="me-1 cursor-pointer"><i class="bi bi-3-square-fill"></i></span>
+                            <span selector="speedup" data-value="4" class="me-1 cursor-pointer"><i class="bi bi-4-square-fill"></i></span>
+                            <span selector="speedup" data-value="5" class="me-1 cursor-pointer"><i class="bi bi-5-square-fill"></i></span>
+                            <span selector="speedup" data-value="6" class="me-1 cursor-pointer"><i class="bi bi-6-square-fill"></i></span>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="Increasing the playback speed of the video can speed up the recording progress, but if the video buffering cannot keep up with the playback speed, it may result in stuttering output video, so use it with caution!" data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Video Preview</div>
+                    <div class="flex-grow-1 d-flex align-items-center border-bottom justify-content-end justify-content-sm-start py-2">
+                        <div class="me-3">
+                            <label class="form-check form-switch ps-0 mb-0 border-2">
+                                <input selector="preview-switch" class="form-check-input fs-3 float-none ms-0 mt-0 cursor-pointer" type="checkbox" role="switch">
+                            </label>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="When enabled, the video preview will be displayed during the download." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Tab Progress</div>
+                    <div class="flex-grow-1 d-flex align-items-center border-bottom justify-content-end justify-content-sm-start py-2">
+                        <div class="me-3">
+                            <label class="form-check form-switch ps-0 mb-0 border-2">
+                                <input selector="tab-progress" class="form-check-input fs-3 float-none ms-0 mt-0 cursor-pointer" type="checkbox" role="switch">
+                            </label>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="When enabled, the progress will be displayed on the current tab." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <div class="option-label text-end me-4 fw-light text-nowrap">Segmentation</div>
+                    <div class="flex-grow-1 d-flex align-items-center border-bottom justify-content-end justify-content-sm-start py-2">
+                        <div class="me-3">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <input selector="segment-threshold" type="number" class="form-control me-1" value="0" style="max-width: 80px">
+                                <span class="text-black-50">GB</span>
+                            </div>
+                        </div>
+                        <span class="text-secondary tooltip-toggle" data-bs-title="Split the video once it reaches the specified size. Set to 0 to disable segmentation. If the media you need to record is very large, enabling segmentation is recommended to prevent running out of memory." data-bs-placement="right"><i class="bi bi-question-circle-fill"></i></span>
+                    </div>
+                </div>
+                
+                <button selector="options-close" class="btn btn-close position-absolute top-0 end-0 mt-1 me-1"></button>
+            </div>
+        </div>
+
+        <div selector="part-tips" class="alert alert-warning py-2 text-center d-none"><i class="bi bi-exclamation-circle"></i> The video has been segmented! Possible reasons include too many media fragments, a large file size, or video interruptions. Please save the segments as soon as possible to free up memory usage!</div>
+
+        <div selector="files" class="d-flex justify-content-center flex-wrap">
+
+            <div selector="files-part" class="border mx-2 mb-4 text-center rounded-3 shadow-sm bg-light overflow-hidden d-none">
+                <div class="mx-5 py-2 position-relative">
+                    <span selector="part-icon" class="d-block display-2 position-relative opacity-0"><i class="bi bi-filetype-mp4"></i></span>
+                    <div selector="part-loading" class="d-flex justify-content-center align-items-center position-absolute w-100 h-100 top-0 start-0">
+                        <span class="spinner-border" style="width: 3.5rem; height: 3.5rem;" role="status"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center bg-dark-subtle text-dark-emphasis p-2 border-top border-dark-subtle">
+                    <div class="text-start">
+                        <span selector="part-name" class="d-block small">Part--</span>
+                        <span selector="part-duration" class="d-block small">--</span>
+                        <span selector="part-resolution" class="d-block small">--</span>
+                    </div>
+                    <button selector="part-save" class="fs-2 text-danger btn" disabled><i class="bi bi-download"></i></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/extensions/dist/rec-loader.js"></script>
+<script src="/static/downloader.js"></script>
+<footer class="pt-5 pb-2 text-dark-emphasis bg-dark-subtle">
+    <div class="container-xxl py-3 py-sm-5 mb-sm-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xxl-4">
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Browser support</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1">Chromium 92+</li>
+                    <li class="mb-1">Google Chrome 92+</li>
+                    <li class="mb-1">Microsoft Edge 92+</li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Information</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/privacy-policy" rel="nofollow">Privacy policy</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/page/terms-of-service" rel="nofollow">Terms of service</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/feedback">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Function</span>
+                    </h5>
+                </div>
+                <ul class="list-unstyled fw-light">
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/m3u8downloader">M3U8 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/videodownloader">MP4 Video Downloader</a></li>
+                    <li class="mb-1"><a class="text-decoration-none link-dark" href="/bufferrecorder">Video Buffering Recorder</a></li>
+                </ul>
+            </div>
+            <div class="col mb-4">
+                <div class="d-flex justify-content-start align-items-start">
+                    <h5 class="fs-4 fw-bolder mb-4 position-relative">
+                        <span class="position-absolute w-100 bottom-0 start-0 border border-5 border-dark-subtle"></span>
+                        <span class="position-relative">Interactive</span>
+                    </h5>
+                </div>
+                <a class="display-6 me-2" href=""><i class="bi bi-google"></i></a>
+                <a class="display-6" href="https://www.reddit.com/r/chrome_extensions/comments/1auj9vm/hls_m3u8_video_downloader_chrome_extensions/"><i class="bi bi-reddit"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="border-top mt-5 py-3 border-dark-subtle">
+        <div class="container-xxl text-black-50 d-flex justify-content-between align-items-center">
+            <span>&copy;fetchv.net. All rights reserved</span>
+                        <button id="langSwitchToggle" class="btn btn-light"><span class="me-1">EN</span><i class="bi bi-globe"></i></button>
+            <div id="langSwitch" class="offcanvas offcanvas-end" tabindex="-1" style="max-width: 200px;">
+                <div class="offcanvas-header pb-0">
+                    <span></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body narrow-scrollbar">
+                                        <a class="d-block mb-2" href="/bufferrecorder">English</a>
+                                        <a class="d-block mb-2" href="/nl/bufferrecorder">Nederlands</a>
+                                        <a class="d-block mb-2" href="/vi/bufferrecorder">Tiếng Việt</a>
+                                        <a class="d-block mb-2" href="/es/bufferrecorder">Espa&ntilde;ol</a>
+                                        <a class="d-block mb-2" href="/pt/bufferrecorder">Portugu&ecirc;s</a>
+                                        <a class="d-block mb-2" href="/de/bufferrecorder">Deutsche</a>
+                                        <a class="d-block mb-2" href="/fr/bufferrecorder">Fran&ccedil;ais</a>
+                                        <a class="d-block mb-2" href="/it/bufferrecorder">Italiano</a>
+                                        <a class="d-block mb-2" href="/no/bufferrecorder">Norsk</a>
+                                        <a class="d-block mb-2" href="/fi/bufferrecorder">Suomalainen</a>
+                                        <a class="d-block mb-2" href="/sv/bufferrecorder">Svenska</a>
+                                        <a class="d-block mb-2" href="/da/bufferrecorder">Dansk</a>
+                                        <a class="d-block mb-2" href="/el/bufferrecorder">&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;ά</a>
+                                        <a class="d-block mb-2" href="/tr/bufferrecorder">T&uuml;rk</a>
+                                        <a class="d-block mb-2" href="/ru/bufferrecorder">русский</a>
+                                        <a class="d-block mb-2" href="/hi/bufferrecorder">हिंदी</a>
+                                        <a class="d-block mb-2" href="/zh-cn/bufferrecorder">简体中文</a>
+                                        <a class="d-block mb-2" href="/th/bufferrecorder">ไทย</a>
+                                        <a class="d-block mb-2" href="/ko/bufferrecorder">한국어</a>
+                                        <a class="d-block mb-2" href="/ro/bufferrecorder">Rom&acirc;nă</a>
+                                        <a class="d-block mb-2" href="/pl/bufferrecorder">Polskie</a>
+                                        <a class="d-block mb-2" href="/zh-tw/bufferrecorder">繁體中文</a>
+                                        <a class="d-block mb-2" href="/ga/bufferrecorder">Gaeilge</a>
+                                        <a class="d-block mb-2" href="/et/bufferrecorder">eesti keel</a>
+                                        <a class="d-block mb-2" href="/bg/bufferrecorder">български</a>
+                                        <a class="d-block mb-2" href="/cs/bufferrecorder">če&scaron;tina</a>
+                                        <a class="d-block mb-2" href="/ms/bufferrecorder">Melayu</a>
+                                        <a class="d-block mb-2" href="/sk/bufferrecorder">slovensk&yacute;</a>
+                                        <a class="d-block mb-2" href="/hu/bufferrecorder">Magyar</a>
+                                        <a class="d-block mb-2" href="/id/bufferrecorder">Bahasa Indonesia</a>
+                                        <a class="d-block mb-2" href="/fil/bufferrecorder">Filipino</a>
+                                        <a class="d-block mb-2" href="/pt-br/bufferrecorder">Portugu&ecirc;s (Brasil)</a>
+                                        <a class="d-block mb-2" href="/pt-pt/bufferrecorder">Portugu&ecirc;s (Portugal)</a>
+                                        <a class="d-block mb-2" href="/ja/bufferrecorder">日本語</a>
+                                    </div>
+            </div>
+                    </div>
+    </div>
+</footer>
+<script>
+    (() => {
+        const $offcanvasNavToggle = document.getElementById('offcanvasNavToggle');
+        const $langSwitchToggle = document.getElementById('langSwitchToggle');
+        const offcanvasNav = new bootstrap.Offcanvas('#offcanvasNav');
+        $offcanvasNavToggle.onclick = () => {
+            offcanvasNav.toggle();
+        };
+        if ($langSwitchToggle) {
+            const langSwitch = new bootstrap.Offcanvas('#langSwitch');
+            $langSwitchToggle.onclick = () => {
+                langSwitch.toggle();
+            }
+        }
+    })();
+</script>
+</body>
+</html>

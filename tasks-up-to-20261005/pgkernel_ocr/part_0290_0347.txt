@@ -1,0 +1,1079 @@
+
+
+===== PAGE 291 =====
+第6章
+查询执行
+查询编译器将用户提交的SQL查询语句转变成执行计划之后，由查询执行器继续执行查询的处
+理过程。在查询执行阶段，将根据执行计划进行数据提取、处理、存储等一系列活动，以完成整个
+查询执行过程。查询执行过程更像一个结构良好的裸机，执行计划为输人，执行相应的功能。因
+此，本章重点介绍查询执行器的框架结构、执行方式，结合实例为读者说明数据库执行计划的相关
+步骤，帮助读者进一步理解PostgreSQL的查询执行过程。
+查询执行器的框架结构如图6-1所示。同查询编译器一样，查询执行器也是被函数exec_simple_
+query调用，只是调用的顺序上查询编译器在前，查询执行器在后。从总体上看，查询执行器实际
+就是按照执行计划的安排，有机地调用存储、索引、并发等模块，按照各种执行计划中各种计划节
+点的实现算法来完成数据的读取或者修改的过程。
+上层调用
+查询执行器
+下层调用
+Transaction
+特定功能子模块
+Cursor
+表达式计算
+存储
+ProcessUtility
+Relation&Atributemanipulation
+投影运算
+HeapTuple
+Object
+元组操作
+HeapAM
+exec_simple_query
+Portal
+Control
+索引
+Join
+IndexAM
+Executor
+Plan
+Node
+materialization
+Scan
+图6-1查询执行器的框架结构
+如图6-1所示，查询执行器有四个主要的子模块：Portal°、ProcessUtility、Executor和特定功能
+PortalData是此部分的核心数据结构，而PostgreSQL实现采用了层次模型，因此，此部分被称为Portal部分或Portal
+层。PostgreSQL中很多模块以核心数据结构命名。
+
+
+===== PAGE 292 =====
+第6章查询执行283
+子模块部分。由于查询执行器将查询分为两大类别，分别由子模块ProcessUtility和Executor负责执
+行，因此查询执行器会首先在Portal模块根据输人执行计划选择相应的处理模块（Portal模块也称
+为策略选择模块）。选择执行策略后，会将执行控制流程交给相应的处理部件（即ProcessUtility或
+Executor），两者的处理方式迥异，执行过程和相关数据结构都有很大的不同。Executor输入包含了
+一个查询计划树（PlanTree），用于实现针对于数据表中元组的增删查改等操作。而ProcessUtility
+处理其他各种情况，这些情况间差别很大（如游标、表的模式创建、事务相关操作等），所以在
+ProcessUtility中为每种情况实现了处理流程。当然，在两种执行模块中都少不了各种辅助的子系统，
+例如执行过程中会涉及表达式计算、投影运算以及元组操作等，这些功能相对独立，并且在整个查
+询执行过程中会被重复调用，因此将其单独划分为一个模块（特定功能子模块）。
+本章将采用由外到内的顺序介绍各个模块。首先介绍策略选择，然后讲解两种执行方式的原理
+与实现，最后介绍内部各种独立子功能。每个部分都将会是以基础知识和数据结构为基础，然后讲
+述实现的原理和过程，读者可根据自身需求进行选择阅读。
+6.1查询执行策略
+执行流程进人查询执行阶段后，会为每种执行计划选择相应的处理过程，执行相应的处理，最
+后根据要求返回结果。
+图6-2显示了PostgreSQL计划生成与处理的基本过程。SQL语句会被查询编译器转换成为两种
+基本类型的数据结构（执行计划树和非计划树操作），并在执行过程中为其选择合适的执行部件
+（Executor或ProcessUtility）进行处理。DML语句（SELECT、INSERT、UPDATE、DELETE）会被查
+询编译器转换成执行计划树，因为DML语句的执行过程十分相近，并且都可以使用统一的数据结
+构加以表示和处理，所以被作为一种特殊的方式，单独进行优化和处理。而其他类型的语句被归为
+非计划树操作，使用另一处理流程进行处理。然而，有些复杂的SQL语句不能简单地归类为一种基
+本处理类型，在PostgreSQL实现中，会将其解析成两种基本类型数据结构的序列（实际是按顺序构
+成一个链表），并将其顺序执行来完成用户的请求操作。
+SQL语句
+查询编译器
+查询执行器
+AOAA
+》
+Portal
+图示
+执行计划树
+(PlannedStmt)
+DATA
+非计划树操作
+ExecutorProcessUtility
+(Statement)
+图6-2查询语句处理过程
+
+
+===== PAGE 293 =====
+284PostgreSQL数据库内核分析
+从查询编译器输出执行计划，到执行计划被具体的执行部件处理这一过程，被称作执行策略的
+选择过程，负责完成执行策略选择的模块称为执行策略选择器。该部分完成了对于查询编译器输出
+数据的解析，选择预先设定好的执行流程。本节将重点介绍几种执行策略及执行策略的选择过程。
+6.1.1可优化语句和数据定义语句
+从上面的介绍可以看出，在PostgreSQL数据库中，用户输人的SQL语句被分成两种类型，并分
+别被两种不同的执行部件处理。这两种语句分别被称为：可优化语句（Optimizablestatement）和数
+据定义语句（DDLstatement）。
+可优化语句主要包括DML语句。这类语句的特点是均需要查询相关满足条件的元组，然后将
+这些元组返回给用户（有可能是经过计算的元组）或者在这些元组上进行某些操作之后写回到磁
+盘。因此在经过查询编译器处理后，会为其生成一个或多个执行计划树（PlanTree），用于查询满
+足相关条件的元组并做相应处理。由于在执行计划树的生成过程中会根据查询优化理论进行重写和
+优化，以加快查询速度，因此，这类语句被称作可优化语句。
+数据定义语句则包括数据表创建等操作，这类语句包含查询数据元组以外的各种操作。语句之
+间功能相对独立，所以也被称作功能性操作。
+针对这两种类型的语句，PostgreSQL实现了两个处理模块：执行器（Executor）和功能处理器
+(Utility Processor）。
+1）执行器处理可优化语句，可优化语句包含一个或多个经过重写和优化过的查询计划树，执
+行器会严格根据计划树进行处理。执行器函数名为ProcessQuery，主要代码被放置在src/backend/
+executor/目录中。
+2）功能处理器用于处理数据定义语句，可根据不同类别的功能调用相应的处理函数。功能处
+理器函数名为ProcessUtility，各种数据定义语句的具体实现被放置在src/backend/commands/目录中。
+6.1.2四种执行策略
+在PostgreSQL的实现中，简单的SQL语句会被查询编译器转化为一个执行计划树或者一个非计
+划树操作，而比较复杂的SQL语句则可能会被转化成多个执行计划树或者非计划树操作的序列。如
+图6-3所示，左侧的SQL语句将被查询编译器转换为右边的三个操作。我们把由查询编译器输出的
+每一个执行计划树或者一个非计划树操作所代表的处理动作称为一个原子操作。由于一个语句可能
+被转换为一组原子操作，而这些操作不能简单地使用同一个处理部件进行处理，此时执行策略选择
+器需要根据原子操作的不同调用相应的处理部件。
+此外，有些SQL语句虽然仅被转换为一种原子操作，但是其执行中由于各种原因需要能够缓存
+语句执行的结果，等到SQL语句执行完成之后，再返回被缓存的结果：
+1）对于可优化语句而言，当执行修改元组的操作时，希望能够返回被修改的元组。由于原子
+操作的处理过程不能够被可能有问题的输出过程终止（这是有风险的，一旦输出通道传输出现问
+题，执行过程将被影响），因此不能边执行边返回结果。此时需要有一个缓存结构来临时存放执行
+结果，等执行完成后进行返回。
+PostgreSQL数据库中用于表示查询计划的一种树状结构，将在6.3节中详细介绍。
+
+
+===== PAGE 294 =====
+第6章查询执行285
+2）数据定义语句一般是不包含返回结果的，但是EXPLAIN、SHOW等SQL语句需要返回结
+果，此时也需要一个缓存结构暂存执行结果，然后由Portal为其调用输出过程。
+用于产生自增序列
+CREATETABLEcourse(
+noSERIAL
+CREATE TABLE course(
+name VARCHAR,
+no int4OidDEFAULTnextval(),
+创建基本关系表
+creditINT,
+nameVARCHAR,
+PRIMARYKEY(no)
+credit INT,
+用于唯一检查
+CREATEINDEXcourse_pkeyONcourse(no)
+图6-3由多个原子操作构成的SQL语句例子
+针对以上情况，PostgreSQL实现了不同的执行流程，共分为四类，我们称之为执行策略：
+1）PORTAL_ONE_SELECT：如果用户提交的SQL语句中仅包含一个SELECT类型查询，则查询执行
+器会使用执行器来处理该SQL语句。换句话说，这种策略用于处理仅有一个可优化原子操作的情况。
+2）PORTAL_ONE_RETURNING：如果用户提交的SQL语句中包含一个带有RETURNING子句
+的INSERT/UPDATE/DELETE语句，查询执行器会选择这种策略。因为处理此类语句应先完成所有
+操作（对元组的修改操作），然后返回结果（例如操作是否成功、被修改的元组的数量等），以减
+少出错的风险。查询执行器在执行时，将首先处理所有满足条件元组，并将执行过程的结果缓存，
+然后将结果返回。
+3）PORTAL_UTIL_SELECT：如果用户提交的SQL语句是一个功能类型语句（数据定义语句），
+但是其返回结果类似SELECT语句（例如EXPLAIN和SHOW），查询执行器将选择这种策略。以此
+种策略执行时，同样首先执行语句获取完整结果，并将结果缓存起来，然后将结果返回给用户。
+4）PORTAL_MULTI_QUERY：用于处理除以上三种情况之外的情况。从其名称中的“MULTI”
+就能够看出，这个策略更具有一般性，能够处理一个或多个原子操作，并根据操作的类型选择合适
+的处理部件。
+PORTAL_ONE_RETURNING和PORTAL_UTIL_SELECT两种策略的共同点在于，它们所对应的SQL
+语句的执行过程本来是没有返回结果的，但是由于特殊的需要，会向用户生成类似SELECT查询结果
+的输出，因此这两种策略下的执行需要缓存结果。例如，用UPDATE语句更新元组，根据UPDATE的
+语义只需要找到需要更新的元组，然后对其进行修改并写回磁盘即可，并不存在任何返回值。但为了
+元组的数目。而两者的不同在于使用的处理部件不同，前者将使用执行器，后者将使用功能处理器。
+简单来说，我们可以认为：
+1）PORTAL_ONE_SELECT是用来处理SELECT语句的，该策略会调用执行器来执行。
+2）PORTAL_ONE_RETURNING面向UPDATE/INSERT/DELETE等需要进行元组操作且需要缓
+存结果的语句，该策略也是调用执行器执行。
+3）PORTAL_UTIL_SELECT面向单一数据定义语句，该策略调用功能处理器来执行。
+4）PORTAL_MULTI_QUERY是前面三种策略的混合类型，它可以处理多个原子操作。
+
+
+===== PAGE 295 =====
+286PostgreSQL数据库内核分析
+6.1.3策略选择的实现
+执行策略选择器的工作是根据查询编译器给出的查询计划树链表来为当前查询选择四种执行策
+略中的一种。在这个过程中，执行策略选择器将会使用数据结构PortalData（数据结构6.1）来存储
+查询计划树链表以及最后选中的执行策略等信息，我们通常也把这个数据结构称为“Portal”。
+数据结构6.1PortalData（主要字段）
+typedef struct PortalData
+const char
+*name;
+//Portal的名称
+constchar*sourceText;
+//原始SQL语句
+List
+*stmts;
+//查询编译器输出的查询计划树链表
+Portalstrategy
+strategy;
+//为当前查询选择的执行策略
+PortalStatus
+status;
+//Portal的状态
+QueryDesc
+*queryDesc;
+//查询描述符，存储执行查询所需的所有信息
+TupleDesc
+tupDesc;
+//tupDesc描述可能的返回元组的结构
+......
+)PortalData;
+查询执行器执行一个SQL语句时都会以一个Portal作为输入数据，Portal中存放了与执行该
+SQL语句相关的所有信息（包括查询树、计划树、执行状态等），Portal及其主要字段之间的结构如
+图6-4所示。其中，stmts字段是由查询编译器输出的原子操作的链表，在图6-4的示例中仅给出了
+两种可能的原子操作PlannedStmt和Query，两者都能包含查询计划树，用于保存含有查询的操作。
+当然，有些含有查询计划树的原子操作不一定是SELECT语句，例如游标的声明（utilityStmt字段
+不为空），以及SELECTINTO类型的语句（intoClause字段不为空）。对于UPDATE、INSERT、
+DELTE类型，含有RETURNING子句时returmingList字段不为空。
+PortalData
+口
+const char *sourceText
+PlannedStmt
+Query
+List *stmts
+CmdTypecommandType
+CmdType commandType
+PortalStrategy strategy
+Node *utilityStmt
+Node *utilityStmt
+QueryDesc *queryDesc
+IntoClause *intoClause
+IntoClause *intoClause
+ProtalStatus status
+List *returningList
+List *returningList
+PORTAL_NEW
+PORTAL_ONE_SELECT
+CMD_UNKNOWN
+PORTAL_DEFINED
+PORTAL ONE RETURNING
+CMD_SELECT
+PORTAL_READY
+PORTAL_UTIL_SELECT
+CMD_UPDATE
+PORTAL_ACTIVE
+PORTAL_MULTI_QUERY
+CMD_INSERT
+PORTAL_DONE
+CMD_DELETE
+PORTALFAILED
+CMD_UTILITY
+CMD_NOTHING
+图6-4Portal及其主要字段的结构
+
+
+===== PAGE 296 =====
+第6章查询执行287
+PostgreSQL主要根据原子操作的命令类型以及stmts中原子操作的个数来为Portal选择合适的执
+行策略。
+由查询编译器输出的每一个查询计划树中都包含有一个类型为CmdType的字段，用于标识该原
+子操作对应的命令类型。命令类型分为六类，使用枚举类型定义：
+·CMD_UNKNOWN表示未定义。
+·CMD_SELECT类型表示SELECT查询类型。
+·CMD_UPDATE类型表示更新操作。
+·CMD_INSERT类型表示插入操作。
+·CMD_DELETE类型表示删除操作。
+·CMD_UTILITY类型表示功能性操作（数据定义语句）。
+·CMD_NOTHING类型用于由查询编译器新生成的操作，即如果一个语句通过编译器的处理
+之后需要额外生成一个附加的操作，则该操作的命令类型就被设置为CMD_NOTHING。
+选择PORTAL_ONE_SELECT策略应满足以下条件：
+·stmts链表中只有一个PlannedStmt类型或是Query类型的节点。
+·节点是CMD_SELECT类型操作。
+·节点的utilityStmt字段和intoClause字段为空。
+选择PORTAL_UTIL_SELECT策略应满足以下条件：
+·stmts 链表仅有的一个Query类型的节点。
+·节点是CMD_UTILITY类型操作。
+·节点的utilityStmt字段保存的是FETCH语句（类型为T_FetchStmt）、EXECUTE语句（类型
+为T_ExecuteStmt）、EXPLAIN语句（类型为T_ExplainStmt）或是SHOW语句（类型为T_
+VariableShowStmt）之。
+而PORTAL_ONE_RETURNING策略适用于stmts链表中只有一个包含RETURNING子句（re-
+turningList不为空）的原子操作。其他的各种情况都将以PORTAL_MULTI_QUERY策略进行处理。
+执行策略选择器的主函数名为ChoosePortalStrategy，其输人为PortalData的stmts 链表，输出的
+是预先定义的执行策略枚举类型PortalStrategy。该函数的执行流程如图6-5所示。
+输入：stmts链表
+长度为！
+仅有一个带有计划树
+且包含returnningList
+Query
+PlannedStmt
+需要返回类似查询的结果
+PORTAL_ONE_RETURNING
+PORTAL_UTIL_SELECT
+语句为CMD_UTILITY
+语句类型为CMDSELECT
+utiitystmt字段为空（非声明游标）
+intoClause为空
+（不是SELECTINTO/CREATETABLEAS)
+需要返回类似查询的结果
+图例
+PORTAL_ONE_SELECT
+O表示PORTAL_MULTI_QUERY
+PORTAL_UTIL_SELECT
+图6-5执行策略选择流程
+
+
+===== PAGE 297 =====
+288PostgreSQL数据库内核分析
+6.1.4Portal执行的过程
+Portal是查询执行器执行一个SQL语句的“门户”，所有SQL语句的执行都从一个选择好执行
+策略的Portal开始。所有Portal的执行过程都必须依次调用PortalStart（初始化）、PortalRun（执
+行）、PortalDrop（清理）三个过程，PostgreSQL为Portal提供的几种执行策略实现了单独的执行流
+程，每种策略的Portal在执行时会经过不同的处理过程。Portal的创建、初始化、执行及清理过程
+都在exec_simple_query函数中进行，其过程如下：
+1）调用函数CreatePortal创建一个干净的Portal，其中内存上下文、资源跟踪器、清理函数等
+都已经设置好，但sourceText、stmts等字段并没有设置。
+2）调用函数PortalDefineQuery为刚创建的Portal设置sourceText、stmts等字段，这些字段的值都来
+自于查询编译器输出的结果，其中还会将Portal的状态设置为PORTAL_DEFINED表示Portal已被定义。
+3）调用函数PortalStart对定义好的Portal进行初始化，初始化工作主要如下：
+①调用ChoosePortalStrategy为Portal选择策略。
+②如果选择的是PORTAL_ONE_SELECT策略，调用CreateQueryDesc为Portal创建查询描述符。
+③如果选择的是PORTAL_ONE_RETURNING或者PORTAL_UTIL_SELECT策略，为Portal创建
+返回元组的描述符。
+④将Portal的状态设置为PORTAL_READY，表示Portal已经初始化好，准备开始执行。
+4）调用函数PortalRun执行Portal，该函数将按照Portal中选择的策略调用相应的执行部件来执
+行Portal。
+5）调用函数PortalDrop清理Portal，主要是对Portal运行中所占用的资源进行释放，特别是用
+于缓存结果的资源。
+图6-6显示了四种执行策略在各自的处理过程中的函数调用关系，该图从总体上展示了各种策
+略的执行步骤以及对应执行部件的人口。
+PortalStart
+ChoosePortalStrategy
+PORTAL_QNE_SELECT PORTAL_ONE_RETURNING PORTAL_UTIL_SELECT  PORTAL_MULTI_QUERY
+Y
+图示
+CreateQueryDesc
+ExecCleanTypeFromTL
+UtilityTupleDescriptor
+调用
+按顺
+被调
+者与
+序被
+调用
+ExecutorStart
+用者
+选择调用
+PortalRun
+ProtalRunSelect
+FillPortalStore
+PortalRunMulti
+ExecutorRun
+PortalRunMulti
+PortalRunUtility!
+ProcessQuery
+PortalRunUtility
+PortalRunSelect
+ExecutorStart
+ProcessUtility
+RunFromStore
+ExecutorRun.
+PortalDrop
+ProtalCleanup
+ExecutorEnd
+图6-6Portal执行时的函数调用关系
+
+
+===== PAGE 298 =====
+第6章查询执行289
+对于PORTAL_ONE_SELECT策略的Portal，其中包含一个简单SELECT类型的查询计划树，在
+PortalStart中将调用ExecutorStart进行Executor（执行器）初始化，然后在PortalRun中调用Executor-
+Run开始执行器的执行过程。
+PORTAL_ONE_RETURNING和PORTAL_UTIL_SELECT策略需要在执行后将结果缓存，然后将
+缓存的结果按要求进行返回。因此，在PortalStart中仅会初始化返回元组的结构描述信息。接着
+PortalRun会调用FillPortalStore执行查询计划得到所有的结果元组并填充到缓存中，然后调用Run-
+FromStore从缓存中获取元组并返回。从图6-6中可以看到，FillPortalStore中对于查询计划的执行会
+根据策略不同而调用不同的处理部件，PORTAL_ONE_RETURNING策略会使用PortalRunMulti进行
+处理，而PORTAL_UTIL_SELECT使用PortalRunUtility处理。Portal_MULTI_QUERY策略在执行过程
+中，PortalRun会使用PortalRunMulti进行处理。
+6.2数据定义语句执行
+数据定义语言是一类用于定义数据模式、函数等的功能性语句。不同于元组增删查改的操作，
+数据定义语句的处理过程比较简单，其执行流程最终会进人到ProcessUtility处理器，然后执行
+语句对应的不同处理过程。由于数据定义语句的种类很多，因此整个处理过程中的数据结构和方式
+种类繁、复杂，但流程相对简单、固定。由于处理过程和数据结构的类型众多，我们将会重点介
+绍表创建过程以及相关数据结构，展示PostgreSQL中针对数据描述语句的具体处理过程。
+6.2.1数据定义语句执行流程
+由于ProcessUtility需要处理所有类型的数据定义语句，因此其输人数据结构的类型也是各种各
+样，每种类型的数据结构表示不同的操作类型。ProcessUtility将通过判断数据结构中NodeTag字段
+的值来区分各种不同节点，并引导执行流程进人相应的处理函数。图6-7展示了ProcessUtility的总
+体流程。
+Switch(kind)
+T_TransactionStmt
+PerformCursorOpen
+T_PlannedStmt
+开始
+Switch(node
+Tag)
+T_CreateStmnt-
+transfonmCreateStmt
+结束
+..····.
+T_IndexStmt
+transformIndexStmt
+Definelndex
+T_CreateRoleStmt
+CreateRole
+图6-7数据定义语句处理过程ProcessUtility
+
+
+===== PAGE 299 =====
+290PostgreSQL数据库内核分析
+针对各种不同的查询树，查询编译器在执行处理前会做一些额外的处理对查询树进行分
+析、处理与转换。例如，创建表的语句会用函数transformCreateStmt进行查询树的处理。这些
+处理过程可能会在当前操作之前和之后增加一些新的操作（例如在创建表的操作之前增加创
+建serial序列表操作、之后增加创建触发器用于外键约束操作等），也可能会执行对数据结构
+的处理操作（例如将CreateStmt节点tableElts字段中CONST_CHECK类型的Constraint节点转存
+到CreateStmt的constraints链表中等）。由于这些处理过程会产生一些新的操作，因此最终会生
+成一个由多个操作构成的链表。因此，执行过程需要依次扫描该链表，为每一个原子操作调
+用相应的处理函数。
+相同类别的语句处理过程涉及内容相近，实现思想和主要过程相似。例如，事务类处理主要是
+对于当前事务的状态的判断和转换；游标类处理的主要思想是首次将执行一个查询计划树（Plan
+tree），将结果缓存在Portal指向的特殊结构中，然后按照要求获取元组数据；表、属性管理类主要
+种，我们下面将以一个创建表的例子来介绍数据定义语句的执行流程。
+6.2.2执行实例
+例6.1创建--个名为course的数据表，此表有三个属性：编号（no，自增属性）、姓名
+（name）非空、学分（credit）非负。其中，包含了一个约束定义，主键被定义为编号（no）。对应
+的SQL语句如下：
+CREATE TABLE cOurse(
+no SERIAL,
+name VARCHAR,
+credit INT,
+CONSTRAINT conl CHECK(credit>=0 AND name<>")，
+PRIMARY KEY (no)
+)：
+系统首先会对查询语句进行词法和语法分析，将查询语句构造为查询树的链表。然后，针对链
+表中的每一个查询树进行如下的处理过程（例6.1仅有一个T_CreateStmt类型的查询树）：
+1）分析和重写查询树。
+2）生成查询计划。
+3）创建及初始化Portal。
+4）调用Portal执行过程。
+5）调用Portal清理过程。
+图6-8给出了上述查询语句执行时的主要函数调用流程。
+因此对应的Portal的stmts字段中也只包含一个T_CreateStmt类型节点。ChoosePortalStrategy函数根
+据stmts字段值选择策略时会选择PORTAL_MULTI_QUERY策略。在接下来的PortalRun函数中将会
+调用PortalRunMulti来执行PORTAL_MULTI_QUERY策略，将会把处理流程引l导到ProcessUtility中。
+ProcessUtility将首先调用函数transformCreateStmt对T_CreateStmt节点进行转换处理，流程如图6-9
+所示。该过程会做如下转换：
+
+
+===== PAGE 300 =====
+第6章查询执行291
+pg_parse_query
+pg_analyze_and_rewrite
+pg_plan_queries
+PortalStart
+ChooseProtalStrategy
+PortalRun
+PortalRunMulti
+PortalRunUtility
+ProcessUtility
+transformCreateStmt
+PortalDrop
+DefineRelation
+图6-8表创建流程
+·将主键约束改为创建唯一索引（T_IndexStmt节点）。
+·将自增类型转换为int4Oid，并附加创建专用的SERIAL表（用于记录自增字段，将形成一
+个T_CreateSeqStmt节点）操作。
+·增加CONSTR_DEFAULT类型约束作为默认值（被定
+开始
+义为调用函数nextval）。
+创建SERIAL表（T_CreateSeqStmt节点）的操作会被放
+transformCreateStmt
+在stmts链表中T_CreateStmt节点之前的位置，创建唯一约束
+索引丨（T_IndexStmt节点）的操作被放置在T_CreateStmt节点
+之后。最后还会将单独定义或与属性同时定义的CONSTR_
+操作链表是否
+为空
+CHECK类型约束全部转移到T_CreateStmt节点的constraints
+字段所指向的链表中。
+最后，transformCreateStmt将原有的T_CreateStmt操作转
+获取下一个操作节点
+换为-个操作序列：依次为T_CreateSeqStmt（创建序列
+表）、T_CreateStmt（创建数据表）、T_IndexStmt（创建唯一
+是CreateStmt节
+约束索引)。
+点？
+CREATE SERIAL TABLE course_no_seq;--用于产生自增序列
+否
+CREATE TABLE cOurSe(
+noint4OidDEFAULT nextval(),
+DefineRelation
+ProcessUtility
+nameVARCHAR,
+creditINT,
+CONSTRAINT con1 CHECK(credit>=0 AND name <>"),
+结束
+CREATEINDEXcourse_pkey;--用于唯-一检查
+图6-9
+9ProcessUtility对T_CreateStmt
+之后ProcessUtility将逐个对序列中的操作进行处理。对
+节点的处理过程
+
+
+===== PAGE 301 =====
+292PostgreSQL数据库内核分析
+T_CreateStmt操作将会调用DefineRelation进行数据表的创建，而其他节点则会通过递归调用Proces-
+sUtility进人相应的处理过程。图6-10展示了T_CreateStmt操作的处理过程。
+ACl._check
+ProcessUtility
+transformCreateStmt
+transformRelOptions
+DefineRelation
+MergeAttribute
+Heap_create
+BuildDescForRelation
+AddNewRelationType
+pg_type'
+interpretOidsOption
+AddNewRelationTuple
+(pg_class)
+处理约束和默认值
+AddNewAttributeTuples
+pg_attribute'
+heap_create_with_catalog
+recordDependencyOn
+pg_depend"
+StoreCataloglnheritance
+{pg_inherits)
+StoreConstraints
+pg_attrdef,pg_constrain}
+AddRelationNewConstraints
+pg_attrdef'
+图6-10表创建函数DefineRelation执行流程
+创建表的过程由函数DefineRelation完成，其流程如下：
+1）进行权限检查，确定当前用户是否有权限创建表。
+2）对表创建语句中的WITH子句进行解析（transformRelOptions）。
+3）调用heap_reloptions对参数进行合法性验证。
+4）使用MergeAttributes，将继承的属性合并到表属性定义中。
+5）调用BuildDescForRelation利用合并后的属性定义链表创建tupleDesc结构（这个结构用于描
+述元组各属性结构等信息）。
+6）决定是否使用系统属性OID（interpretOidsOption）。
+7）对属性定义链表中的每一个属性进行处理，查看是否有默认值、表达式或约束检查。
+8）使用heap_create_with_catalog创建表的物理文件并在相应的系统表中注册。
+9）用StoreCatalogInheritance存储表的继承关系。
+10）处理表中新增的约束与默认值（AddRleationNewConstraints）。
+表创建函数的主要功能是由heap_create_with_catalog完成的，之前的各种操作主要是构造heap_
+
+
+===== PAGE 302 =====
+第6章查询执行293
+create_with_catalog所需要的参数。例如，WrTH子句处理主要完成其中存储相关参数的处理，以便
+存人pg_class系统表的reloptions字段中；BuildDescForRelation主要处理表定义中属性名、类型、非
+空约束以便构造pg_attribute系统表相关内容。
+heap_create_with_catalog函数首先会根据要创建表的属性描述信息、表的名称、命名空间等使
+用heap_create创建一个RelationData结构并放人RelCache，并根据这些信息通过调用RelationCreat-
+eStorage函数创建物理文件。然后调用AddNewRelationType，向pg_type中增加一条关于该表的记录。
+AddNewRelationTuple则会将表的相关信息插人pg_class系统表中，而AddNewAttributeTuples将表的
+每个属性记录到pg_attribute系统表中。最后还需要通过调用StoreConstraints将约束和默认值分别存
+储到pg_constraint 和pg_attrdef中。
+6.2.3主要的功能处理器函数
+从创建表的例子可以看到，功能处理器（ProcessUtility）本身只作为人口选择函数，它会根据
+输人的节点类型调用相应的处理过程。除了创建表的处理过程之外，表6-1中还列出了几种常见的
+输人节点类型，并给出了其对应处理函数以及其功能简介。
+表6-1常用数据定义语句处理函数
+节点类型
+核心处理函数
+功能
+BeginTransactionBlock
+标记事务开始
+EndTransactionBlock
+结束事务
+T_TransactionStmt
+DefineSavepoint
+定义保存点
+RollbackToSavepoint
+回滚到保存点
+T_PlannedStmt
+PerfornCursorOpen
+打开游标操作，初始化查询
+T_ClosePortalStmt
+PerformPortalClose
+关闭游标，释放游标占用资源
+T_FetchStmt
+PerformPortalFetch
+执行FETCH/MOVE操作
+T_CreateStrnt
+DefineRelation
+创建关系表
+T_CreateTableSpaceStmt
+CreateTableSpace
+创建tablespace，记录在pg_tablespace系统表中
+RemoveRelations
+删除关系表
+T_DropStmt
+RemoveTypes
+删除自定义类型
+T_CommentStmt
+CommentObject
+记录注释信息到pg_description
+T_CopyStmt
+DoCopy
+完成COPY命令操作
+T_AlterTableStmt
+AlterTable
+实现ALTERTABLE命令
+T_IndexStmt
+Definelndex
+创建索引
+T_CreateSeqStmt
+DefineSequence
+创建一个用于自增属性的关系表
+T_ExplainStmt
+ExplainQuery
+执行EXPLAIR命令
+6.3可优化语句执行
+可优化语句的共同特点是它们被查询编译器处理后都会生成查询计划树，这一类语句由执行器
+（Executor）处理。该模块对外提供了三个接口：ExecutorStart、ExecutorRun和ExecutorEnd，其输人
+是包含查询计划树的数据结构QueryDesc，输出则是相关执行信息或结果数据。如果希望执行某个
+
+
+===== PAGE 303 =====
+294PostgreSQL数据库内核分析
+计划树，仅需构造包含此计划树的QueryDesc，并依次调用ExecutorStart、ExecutorRun、ExecutorEnd
+三个过程即能完成相应的处理过程。从图6-6可以看到，执行器的三个接口函数都是在Portal的相
+关函数中调用的，分别负责执行器的初始化、执行和清理工作，Portal在处理时也使用了同样的方
+式，这样可以把资源分配回收工作与执行过程独立开，能够简化执行过程，更是一种很好的资源管
+理方式。
+执行器对于查询计划树的处理，最终被转换为针对计划树上每一个节点的处理。每种节点表示
+一种物理代数（PhysicalAlgebra）操作，PostgreSQL对其进行初始化、处理、清理的过程。节点的
+处理被设计为需求驱动模式，父节点使用孩子节点提供的数据作为输人，并向其上层节点返回处理
+结果。实际执行时，从根节点开始处理，每个节点的执行过程会根据需求自动调用孩子节点的执行
+过程来获取输入数据（一般为元组），从而层层递归执行，实现整个计划树的遍历执行过程。初始
+化和清理也采用相同的设计模式，这种设计模式使得节点处理的代码结构简洁统一、语义明确，且
+实现方式简单有效。
+接下来将会对执行器部分的各种原理、实现做进一步的介绍，以帮助读者了解执行器的内部实
+现和具体执行过程。
+6.3.1物理代数与处理模型
+数据库的查询逻辑使用逻辑代数（例如：关系代数）来表示。例如，PostgreSQL中使用SQL语
+句，然而执行时需要使用物理代数（PhysicalAlgebra），例如，PostgreSQL中的查询计划。对于一个
+可优化语句，PostgreSQL在执行前会给出与之等价的用物理代数表示的查询计划，然后按照查询计
+划进行执行。
+《数据库系统实现》一书中提到：“物理查询计划由操作符构造，每一个操作符实现计划中的
+一步。物理操作符常常是一个关系代数操作符的特定实现。但是，我们也需要用物理操作符来完成
+另一些与关系代数操作符无关的任务。”此处提到操作符构造的物理计划就是物理代数表达的查询
+计划，操作符在PostgreSQL系统中使用一种节点定义，而无关的任务在该书中提到了表的扫描、排
+不是简单的一一对应关系”，它们之间的转换过程实际就是查询编译器所做的工作，本章主要介绍
+各种物理操作符的实现和执行。
+PostgreSQL中的物理操作符被定义为有0～2个输人和一个输出，这是为了在实现中能够对
+应二叉树结构：所有的物理操作符被组织为一个二叉树，
+每一个物理操作符对应于树中的一个节点，下层节点的输
+Sort
+出作为上层节点输入。数据（元组）从底层节点向上层节
+Join
+点流动，直至根节点，而根节点的输出即为整个查询的结
+果。如图6-11所示，Join类型操作符有两个输入，Sort操
+Join
+Scan
+作符仅有一个输人，Scan操作符则没有输人。元组被Scan
+操作符取出后经过连接操作，然后排序后获得结果。
+Scan
+Scan
+在PostgreSQL的实现中，上层函数通过ExecInitNode、
+ExecProeNode、ExecEndNode三个接口函数来统一对节点进
+图6-11查询计划实例
+
+
+===== PAGE 304 =====
+第6章查询执行295
+行初始化、执行和清理，这三个函数会根据所处理节点的实际类型调用相应的初始化、执行、清理
+函数，例如，若ExecInitNode处理的是SeqScan节点，则调用SeqScan节点的初始化函数ExeclnitSe-
+qScan来实际完成该节点的初始化工作。这三个函数也是递归执行的：对根节点的初始化会递归地
+对下层的节点进行初始化；在根节点调用ExecProcNode获取结果时，也会递归地对下层节点进行执
+行以获取上层节点所需的输人数据；执行完成后只需对根节点进行清理，下层节点也会被递归地
+清理。
+由此可见，查询计划树上的节点就构成了物理元组到执行结果的管道，因此查询计划树的执行
+过程可以看成是拉动元组穿过管道的过程。PostgreSQL采用了一次一元组的执行模式，每个节点被
+执行一次仅向上层节点返回一条元组°。因此，对于整个查询计划树的执行也是一次一元组的模
+式。这种模式有很多的优点：
+·减少了返回元组的延迟。
+·对于某些操作（例如游标、LIMIT子句等）不需要一次性获取所有的元组，节省了开销。
+·减少了实现过程中缓存结果带来的代码复杂性和执行过程中临时存储的开销。
+6.3.2物理操作符的数据结构
+从前面的介绍我们已经看到查询计划树是由各种物理操作符（也简称为计划节点）构成，那
+么在PostgreSQL中是如何存储和表示各类节点的呢？图6-12给出了Hash连接（HashJoin）类型节
+点的数据结构表示。
+Plan
+Join
+HashJoin
+NodeTag type
+Planplan
+Join join
+List *targetlist
+JoinType jointype
+List *hashclauses
+enb* 1!]
+List *joinqual
+struct Plan *lefttree
+struct Plan *righttree
+JOIN INNER
+JOIN_LEFT
+JOIN_FULI
+JOIN RIGHT
+图6-12Hash连接（HashJoin）节点结构定义
+所有物理操作符节点的数据结构都以一个Plan类型的字段开头，这有点像类的继承：把Plan
+看成一个父类，其他物理操作符节点都是它的直接或者间接子类。如图6-12所示，Join节点是Plan
+的子类，从Plan中继承了左右子树指针（leftree，righttree）、节点类型（type）、选择表达式
+（qual）、投影链表（targetlist）等公共字段，并有自己的扩展字段连接类型（jointype）和连接条件
+（joinqual）；HashJoin节点则是Join节点的子类，有自己的扩展字段hashclauses。
+PostgreSQL系统中将所有的计划节点按功能分为四类：控制节点（controlnode）、扫描节点
+有一类特殊的节点，称为物化节点（MaterializationNode），必须首先计算出所有结果，并将其缓存，实现上采取执
+行时每次从缓存中获取一条元组。例如排序节点就属于物化节点。
+
+
+===== PAGE 305 =====
+296PostgreSQL数据库内核分析
+（scannode）、连接节点（joinnode）和物化节点（materializationnode），并分别为扫描、连接节点
+类型定义了公共父类Scan、Join。Hash连接属于连接节点，因此Hash连接继承于Join节点。连接
+节点类型的公共父类定义了连接的类型以及连接的条件。作为Hash连接节点，需要使用Hash函
+数，所以HashJoin节点扩展定义了hashclauses字段来存储相关信息，其中包括需要做Hash的属性
+以及使用的Hash函数等。
+Plan的众多子类节点通过lefttree和righttree字段构成了整个查询计划树，其根节点指针被保存
+在PlannedStmt类型的数据结构中，其中
+CMD_SELECT
+PlannedStmt
+包含了语句的类型（commandType）、查
+CMDUPDATE
+CMD_INSERT
+询计划树根节点（planTree）、查询涉及
+CMDDELETE
+NodeTagtype
+的范围表（rtable）、结果关系表（result-
+CMDUTILITY
+CmdType commandType
+Relation）。PlannedStmt结构则被放在
+QueryDese
+struct Plan *planTree
+QueryDesc中，QueryDesc结构的基本定义
+如图6-13所示。
+List *rtable
+CmdType operation
+作为执行器的输人，QueryDesc中包
+List *resultRelation
+PlannedStmt*plannedstmt
+含查询计划树（plannedstmt字段）、功能
+语句相关执行计划（utilitystmt字段）、执
+Node*utilitystmt
+EState
+行器全局状态（estate字段）以及计划节
+Estate*estate
+点执行状态（planstate字段）等。从图
+PlanState *planstate
+NodeTag type
+6-13可以看出，执行器全局状态estate中
+List *es_range_table
+保存了查询涉及的范围表（es_range_ta-
+MemoryContext
+ble）、Estate所在的内存上下文（es_que-
+es query_ctx
+ry_ctx，也是执行过程中一直保持的内存
+TupleTablees_tupleTable
+上下文）、用于在节点间传递元组的全局
+ExprContext
+*es_per_tuple_exprContext
+元组表（es_tupleTable）和每获取一个元
+组就会回收的内存上下文（es_per_tuple_
+exprContext)。
+图6-13QueryDesc数据结构组织
+执行器初始化时，ExecutorStart会根据查询计划树构造执行器全局状态（estate）以及计划节点
+执行状态（planstate）。在查询计划树的执行过程中，执行器将使用planstate来记录计划节点执行状
+态和数据，并使用全局状态记录中的es_tupleTable字段在节点间传递结果元组。执行器的清理函数
+ExecutorEnd将回收执行器全局状态和计划节点执行状态。
+系。与图6-12类似，PostgreSQL为每种计划节点定义了一种状态节点。所有的状态节点均继承于
+PlanState节点，其中包含辅助计划节点指针（Plan）、执行器全局状态结构指针（state）、投影运算
+相关信息（targetlist）、选择运算相关条件（qual），以及左右子状态节点指针（lefttree、righttree）。
+状态节点之间通过lefttree和nighttree指针组织成和查询计划树结构类似的状态节点树，同时，每个
+状态节点都保存了指向其对应的计划节点的指针（PlanState类型中的Plan字段）。图6-14中展示了
+链表结构，保存了用于Insert、Update、Delete操作的目标关系表在PlannedStmt结构中链表rtable中的索引位置。
+
+
+===== PAGE 306 =====
+第6章查询执行297
+连接节点状态的公共父类JoinState，它继承于PlanState，扩展了连接类型（jointype）和连接条件
+（joinqual）属性。而HashJoinState继承于JoinState并扩展了更多的属性，包括Hash函数相关内容
+（hashclauses、hj_HashTable、hj_OuterHashKeys、hj_InnerHashKeys、hj_HashOperators）、左子节点返
+回元组指针（hj_OuterTupleSlot）、右子节点返回元组指针（hj_HashTupleSlot）等。
+Plan
+Join
+HashJoin
+NodeTag type
+Planplan
+Join join
+List *targetlist
+JoinType jointype
+List *hashclauses
+List *qual
+List *joinqual
+struct Plan *lefttree
+struct Plan *righttree
+PlanState
+JoinState
+HashJoinState
+NodeTag type
+PlanStateps
+JoinState js
+Plan *plan
+JoinType jointype
+List *hashclauses
+Estate *state
+List *joinqual
+HashJoinTablehj_HashTable
+List *targetlist
+List *hj_OuterHashKeys
+List *qual
+List *hj_InnerHashKeys
+Struct PlanState*leftree
+List *hj_HashOperators
+Struct PlanState*righttree
+TupleTableSlot
+*hj_OuterTupleSlot
+TupleTableSlot
+TupleTableSlot
+*ps_ResultTupleSlot
+*hj_HashTupleSlot
+++ ....
+.....
+图6-14计划节点与节点执行状态
+至此，执行器执行过程中涉及的主要各种数据结构已经介绍完毕。执行器的输人是QueryDesc，
+它包含了存储查询计划树根节点指针的PlannedStmt结构。执行器执行时，首先构造全局状态记录
+Estate结构，并为每个计划节点（Plan）构造对应的状态节点（PlanState），然后在执行中使用相关
+结构存储执行状态，执行完毕后释放相关的数据结构。
+6.3.3执行器的运行
+在PostgreSQL中提供了三个接口函数用于调用执行器，分别为ExecutorStart、ExecutorRun和Ex-
+ecutorEnd。当需要使用执行器来处理查询计划时，仅需依次调用三个函数即可完成执行器的整个执
+行过程。
+
+
+===== PAGE 307 =====
+298PostgreSQL数据库内核分析
+执行器运行时的函数调用关系如图6-15所示，ExecutorStart通过调用standard_ExecutorStart对执
+行器进行必要的初始化，主要工作包括构造EState结构和查询计划树的初始化（即构造对应的
+PlanState树，由InitPlan函数完成）。ExecutorRun的功能由standard_ExecutorRun实现，在执行过程
+中会调用ExecutePlan完成查询计划的执行。ExecutorEnd由standard_ExecutorEnd函数完成，通过调
+用ExecEndPlan处理执行状态树根节点释放已分配的资源，最后释放执行器全局状态EState完成整
+个执行过程。
+Plan
+Executor
+Node
+构造EState
+ExecutorStart
+standard_ExecutorStart
+InitPlan
+ExeclnitNode
+ExecProcNode
+ExecutorRun
+standard_ExecutorRun
+ExecutePlan
+根据操作类型执行
+SELECT/INSERT/UP
+DATE/DELETE操作
+ExecEndPlan
+ExecEndNode
+ExecutorEnd
+standard_ExecutorEnd
+释放EState
+图6-15执行器函数调用
+（1）初始化查询计划树
+执行器中对查询计划树的初始化都是从其根节点开始，并递归地对其子节点进行初始化。计划
+之后会输出与该计划节点对应的PlanState结构指针，计划节点的PlanState结构也会按照查询计划树
+的结构组织成计划节点执行状态树。对计划节点初始化的主要工作是根据计划节点中定义的相关信
+息，构造对应的PlanState结构并对相关字段赋值。
+计划节点的初始化由函数ExecInitNode完成，该函数以要初始化的计划节点为输人，并返回该
+计划节点所对应的PlanState结构指针。在ExecInitNode中，通过判断计划节点的类型来调用相应的
+处理过程，每一种计划节点都有专门的初始化函数，且都以“ExecInit节点类型”的形式命名。例
+如，NestLoop节点的初始化函数为ExecInitNestLoop。在计划节点的初始化过程中，如果该节点还有
+下层的子节点，则会递归地调用子节点的初始化函数来对子节点进行初始化。图6-17中展示了对
+NestLoop节点进行初始化时对其子节点进行初始化的递归调用过程。如图6-17所示，ExecInitNode
+函数会根据计划节点的类型（T_NestLoop）调用该类型节点的初始化函数（ExecInitNestLoop）。由
+于NestLoop节点有两个子节点，因此ExecInitNestLoop会先调用ExecInitNode对其左子节点进行初始
+化，并将其返回的PlanState结构指针存放在为NestLoop构造的NestLoopState结构的lefttree字段中；
+然后以同样的方式初始化右子节点，将返回的PlanState结构指针存放于NestLoopState的righttree字
+
+
+===== PAGE 308 =====
+第6章查询执行299
+段中。同样，如果左右子节点还有下层节点，初始化过程将以完全相同的方式递归下去，直到到达
+查询计划树的叶子节点。而在初始化过程中构造的PlanState子树也会层层返回给上层节点，并被链
+接在上层节点的PlanState结构中，最终构造出完整的PlanState树。
+开始
+PlanState
+创建PlanState节点
+NodeTag type
+Pian
+Plan *plan
+NodeTag type
+初始化投影运算
+Estate
+*state
+List *targetlist
+List
+*targetlist
+List *qual
+初始化选择运算
+List *qual
+struct Plan *lefttree
+Struct PlanState
+*lefttree
+调用左孩子初始化
+struct Plan *righttree
+Struct PlanState *righttree
+TupleTableSlot
+调用右孩子初始化
+*ps_ResultTupleSlot
+在Estate.es_tupleTable中申请
+结果元组存储结构
+返回指向PlanState结构指针
+结束
+图6-16计划节点初始化的一般步骤
+Nest Loop
+ExeclnitNode
+Hash Join
+IndexScan
+case T_HashJoin:
+(course)
+result =(PlanState *) ExeclnitHiashJoin(.):
+break:
+......
+ExeclnitNestLoop
+return result:
+ExeclnitNode
+case T_ NestLoop:
+nlstate = makeNode(NestLoopState):
+result =(PlanState *) ExeclnitNestLoop(..);
+ExeclnitNode
+break:
+outerPlanState(nlstate) = ExeclnitNode(..)
+innerPlanState(nlstate)=ExeclnitNode(...)
++++*+*
+case T_IndexScan:
+retum result;
+retum nlstate;
+result =(PlanState *)ExecinitlndexScan(..):
+break:
+retum result:
+图6-17NestLoop节点初始化的递归调用过程
+
+
+===== PAGE 309 =====
+300PostgreSQL数据库内核分析
+(2）查询计划执行
+查询计划的实际执行由函数ExecutePlan完成，该函数的主体部分是一个大的循环，每一次循
+环都通过ExecProcNode函数从计划节点状态树中获取一个元组，然后对该元组进行相应的处理（增
+删查改），然后返回处理的结果。当ExecProcNode从计划节点状态树中再也取不到有效的元组时结
+束循环过程。
+如图6-18所示，ExecProcNode的执行过程也和ExecInitNode类似：从计划节点状态树的根节点
+获取数据，上层节点为了能够完成自己的处理将会递归调用ExecProcNode从下层节点获取输人数据
+（一般为元组），然后根据输入数据进行上层节点
+开始
+对应的处理，最后进行选择条件的运算和投影运
+算，并向更上层的节点返回结果元组的指针。同
+ExecInitNode一样，ExecProcNode也是一个选择函
+是否需要左孩
+一是
+数，它会根据要处理的节点的类型调用对应的处
+子节点数据
+理函数。例如，对于NestLoop类型的节点，其处
+执行左孩子节点获取输
+理函数为ExecNestLoop。ExecNestLoop函数同样会
+入数据
+否
+对NestLoop类型的两个子节点调用ExecProcNode
+以获取输人数据。如果其子节点还有下层节点，
+是否需要右孩
+则以同样的方式递归调用ExecProcNode进行处理，
+一是
+子节点数据
+直到到达叶子节点。每一个节点被ExecProcNode
+执行右孩子节点获取输
+入数据
+处理之后都会返回一个结果元组，这些结果元组
+否
+否
+作为上层节点的输人被处理形成上层节点的结果
+元组，最终根节点将返回结果元组。
+执行节点处理过程
+每当通过ExecProcNode从计划节点状态树中
+获得一个结果元组后，ExecutePlan函数将根据整
+个语句的操作类型调用相应的函数进行最后的处
+执行选择操作
+理。主要处理函数有四个，分别为ExecSelect、
+ExecInsert、ExecDelete、ExecUpdate。
+选择语句的处理较为简单，通过ExecSelect
+是否满足选择
+条件
+直接输出查询结果。对于插人语句，则首先需要
+调用ExecConstraints对即将插入的元组进行约束
+是
+检查，如果满足要求，ExecInsert会调用函数heap
+执行投影操作
+_insert将元组存储到存储系统。对于删除和更新，
+则分别由ExecDelete和ExecUpdate调用heap_de-
+lete和heap_update完成。
+返回结果元组指针
+(3）执行器清理
+当执行器处理完所有能够获得的元组之后，
+由执行器清理函数ExecutorEnd负责善后工作。该
+结束
+函数调用ExecEndPlan对计划节点执行状态树进
+行清理。对计划节点执行状态树的清理和执行状
+图6-18计划节点执行的一般过程
+
+
+===== PAGE 310 =====
+第6章查询执行301
+态树的初始化、执行相类似：从根节点开始递归调用ExecEndNode对每一个计划节点的执行状态节
+点进行清理。同样，ExecEndNode只是一个选择函数，针对不同类型的节点有相应的清理函数。例
+如，NestLoop节点的清理函数是ExecEndNestLoop。如图6-19所示，清理过程的任务主要是回收初
+始化过程中分配的资源、投影和选择结构的内存、结果元组存储空间等，计划节点执行状态树清理
+完之后，ExecutorEnd还将调用FreeExecutorState清理执行器全局状态。
+PlanState
+开始
+NodeTag type
+回收表达式计算上下文
+Plan *plan
+Estate *state
+回收分配的结果元组空间
+List *targetlist
+List *qual
+清理其他特殊结构
+Struct PlanState *lefttree
+Struct PlanState *righttree
+调用左孩子节点清理过程
+TupleTableSlot
+*psResultTupleSlot
+调用右孩子节点清理过程
+*....
+结束
+图6-19计划节点的清理过程
+6.3.4执行实例
+例6.2查询Jennifer老师所授DatabaseSystem课程学生人数。其中涉及的几个表的模式定义
+如下：
+·course（no，name，credit）：记录课程信息，在课程号上建有索引l。
+·teacher（no，name，sex，age）：保存教师信息。
+·teach_course（tno，cno，stu_num）：记录教师任课信息。
+所用到的SQL语句为：
+SELECTt.name,C.name,stu_num
+FROM course AS c,teach_course AS tc,teacher AS t
+WHERE c.no = tc.cno AND tc.tno=t.no AND c.name='Database System'AND t.name ='Jennifer';
+PostgreSQL首先将对该查询语句进行词法和语法分析，将查询语句转换为分析树的链表。然后
+针对链表中的每一个分析树进行如下的处理（例6.2中的分析树链表仅有一个SelectStmt节点）：
+1）分析和重写分析树。
+2）生成执行计划。
+
+
+===== PAGE 311 =====
+302PostgreSQL数据库内核分析
+3）创建Portal数据结构。
+4）调用Portal初始化过程。
+5）调用Portal执行过程。
+6）调用Portal清理过程。
+图6-20给出执行例6.2中SQL语句时的函数调用流程。在PortalStart过程中，将为该语句选择
+执行策略，由于仅包含一个PlannedStmt节点，且命令类型为CMD_SELECT，因此ChoosePortalStrate-
+gy会选择PORTAL_ONE_SELECT策略。接下来，PortalStart会调用CreateQueryDesc根据PlannedStmt
+结构构造QueryDesc结构体，并将其作为ExecutorStart的输人完成执行器初始化工作。PortalRun会
+根据选择的执行策略，调用PortalRunSelect函数，它调用ExecutorRun完成计划的执行。最后，清理
+函数PortalDrop会通过PortalCleanup函数来调用ExecutorEnd完成执行器内部的清理，最后释放
+QueryDesc结构。
+pg._parse_query
+pg_analyze_and_rewrite
+ChoosePortalStrategy
+pg_plan_querics
+CreateQueryDesc
+PortalStart
+ExecutorStart
+PortalRun
+PortalRunSelect
+ExecutorRun
+PortalDrop
+PortalCleanup
+ExecutorEnd
+FreeQueryDesc
+图6-20例6.2执行时的函数调用
+在图6-21中展示了例6.2中查询语句对应的查询计划树。该查询计划包含三个扫描节点：Se-
+qScan(teach_course）、SeqScan（teacher）、IndexScan（course），分别从 teach_course、teacher、course
+表中扫描元组。扫描节点是一种物理操作符，用于扫描表以获取其中的元组，通常有顺序扫描
+（SeqScan）和索引扫描（IndexScan）两种方式。SeqScan表示从头到尾顺序扫描一个表中的元组，
+然后返回其中满足条件的元组。而IndexScan表示使用索引辅助查找满足条件的元组，但前提是在
+条件涉及的属性上建有可用的索引。除此之外，图6-21中还涉及两个连接节点：HashJoin和
+NestLoop，HashJoin节点使用Hash方法实现连接操作，而NestLoop使用嵌套循环连接方法实现连接
+操作。
+当需要从查询计划树的根节点NestLoop中取得元组时，实际是从执行状态树的根节点中取元

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+  沃拓克斯·月族偷窃掉落一览（Uncompromising Mode）
+  去AI味设计决策（写死，防漂移）：
+  - 场景：饥荒玩家写给玩家的模组攻略图鉴 → 手绘纸面感，不做科技发布会皮肤
+  - 配色（语义绑定）：纸面 #f2e8d5 / 墨色 #33291c / 沃拓克斯恶魔红 #a63d2a（=偷到即死、警示）
+    / 月族青灰 #5a6d70（=月之盟誓、小注）/ BOSS 用深赭 #7a4a21 标注
+  - 字体：Noto Serif SC（标题+条目名，图鉴感）+ Noto Sans SC（说明正文，信息密度高）
+  - 布局：上说明下双栏图鉴，条目用虚线分隔 + 名字加点导引，不做彩色药丸徽章
+-->
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #d8cdb6; }
+  body {
+    font-family: "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
+    color: #33291c;
+    display: flex; justify-content: center; padding: 28px 16px;
+  }
+  .sheet {
+    width: 1240px;
+    background:
+      radial-gradient(ellipse at 18% 8%, rgba(255,252,240,.9), rgba(255,252,240,0) 55%),
+      radial-gradient(ellipse at 85% 95%, rgba(196,178,140,.28), rgba(196,178,140,0) 60%),
+      #f2e8d5;
+    box-shadow: 0 2px 6px rgba(51,41,28,.25), 0 18px 48px rgba(51,41,28,.28);
+    padding: 44px 52px 36px;
+    position: relative;
+  }
+  /* 纸面细纹理 */
+  .sheet::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(0deg, rgba(51,41,28,.022) 0 1px, transparent 1px 3px);
+  }
+  .inner { position: relative; }
+
+  /* ---------- 页眉 ---------- */
+  header { text-align: center; margin-bottom: 26px; }
+  h1 {
+    font-family: "Noto Serif SC", serif; font-weight: 900;
+    font-size: 40px; letter-spacing: 6px; color: #2c2216;
+  }
+  h1 .moon { color: #5a6d70; }
+  .subtitle {
+    margin-top: 8px; font-size: 14px; color: #5a6d70; letter-spacing: 2px;
+  }
+  .rule {
+    margin: 18px auto 0; width: 82%; height: 7px;
+    border-top: 2px solid #33291c; border-bottom: 1px solid #33291c;
+  }
+
+  /* ---------- 通用说明 ---------- */
+  .notes {
+    margin: 24px 0 30px;
+    display: grid; grid-template-columns: 190px 1fr; gap: 0 26px;
+  }
+  .notes-label {
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 20px;
+    color: #a63d2a; letter-spacing: 4px;
+    border-right: 1px dashed #9a8a6d; padding-top: 4px;
+    writing-mode: horizontal-tb;
+  }
+  .notes-label small { display:block; font-family:"Noto Sans SC"; font-weight:400; font-size:12px; color:#8a7a5c; letter-spacing:1px; margin-top:6px; }
+  .notes ul { list-style: none; font-size: 14.5px; line-height: 1.78; }
+  .notes li { margin-bottom: 4px; padding-left: 1.3em; text-indent: -1.3em; }
+  .notes b { font-weight: 700; color: #2c2216; }
+
+  /* ---------- 掉落列表 ---------- */
+  .list-head {
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px;
+  }
+  .list-head h2 {
+    font-family: "Noto Serif SC", serif; font-weight: 900; font-size: 24px; letter-spacing: 3px;
+  }
+  .list-head .sub { font-size: 13px; color: #8a7a5c; }
+  .list-head::after { content: ""; flex: 1; border-top: 1px dashed #9a8a6d; transform: translateY(-4px); }
+
+  .cols { column-count: 2; column-gap: 44px; column-rule: 1px dashed #b3a486; }
+  .entry { break-inside: avoid; padding: 9px 2px 8px; border-bottom: 1px dotted #b3a486; }
+  .entry:first-child { padding-top: 0; }
+  .name-row { display: flex; align-items: baseline; gap: 8px; }
+  .name {
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 17.5px; color: #2c2216;
+    white-space: nowrap;
+  }
+  .name::after { content: ""; }
+  .leader { flex: 1; border-bottom: 1px dotted #9a8a6d; transform: translateY(-3px); min-width: 18px; }
+  .tag {
+    font-size: 11px; letter-spacing: 2px; color: #f2e8d5;
+    background: #7a4a21; padding: 1px 7px 1px 8px; border-radius: 2px;
+    white-space: nowrap; transform: translateY(-2px);
+  }
+  .drops { margin-top: 3px; font-size: 14px; line-height: 1.65; color: #4a3d2b; }
+  .drops .it b { font-weight: 500; color: #33291c; }
+  .drops .pct { font-variant-numeric: tabular-nums; color: #5a6d70; font-size: 13px; }
+  .drops .mult { color: #8a7a5c; font-size: 12.5px; }
+  .drops .sep { color: #b3a486; margin: 0 6px; }
+  .dead { color: #a63d2a; font-weight: 700; }
+  .dead::after { content: "†"; font-weight: 400; margin-left: 1px; }
+  .note-inline { font-size: 12px; color: #8a7a5c; }
+
+  /* ---------- 页脚 ---------- */
+  footer {
+    margin-top: 26px; display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12.5px; color: #8a7a5c;
+  }
+  footer .hand {
+    font-family: "Noto Serif SC", serif; font-size: 14px; color: #5a6d70; letter-spacing: 1px;
+  }
+  .stamp {
+    display: inline-block; border: 2px solid #a63d2a; color: #a63d2a;
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 13px; letter-spacing: 3px;
+    padding: 2px 10px; border-radius: 3px; transform: rotate(-2deg); opacity: .85;
+  }
+</style>
+</head>
+<body>
+<div class="sheet"><div class="inner">
+
+  <header>
+    <h1>沃拓克斯 <span class="moon">· 月之盟誓</span> 偷窃图鉴</h1>
+    <div class="subtitle">小恶魔的体面：不杀，只拿 —— Uncompromising Mode 技能树「月之盟誓」分支</div>
+    <div class="rule"></div>
+  </header>
+
+  <section class="notes">
+    <div class="notes-label">行窃须知<small>HOW TO STEAL</small></div>
+    <ul>
+      <li><b>怎么解锁：</b>技能树·立场分支点亮「月之盟誓」后，用月族武器（玻璃刀／月光玻璃斧／亮茄剑／亮茄粉碎者）攻击生物即可触发偷窃。</li>
+      <li><b>偷什么：</b>先把目标随身物品偷光（最多尝试 100 次），再按下面各生物的专属掉落表随机偷；每偷一次顺手造成 42.5 点伤害。</li>
+      <li><b>灵魂判定：</b>身上至少带 1 个可用灵魂；开偷前先灵魂跳跃一次进入判定窗口，之后每次偷窃都会顺延窗口（灵魂进入回声冷却，不直接消耗）。</li>
+      <li><b>偷几次：</b>BOSS（epic）每 10 天（4800 秒）能偷一次；普通生物和小动物一辈子只能被偷一回。</li>
+      <li><b>没上榜的生物：</b>从它的原生掉落表里随机偷一件（肉类会被过滤掉，不参与随机）。地表召唤的「复活的骨架」就属这类。</li>
+      <li><b>数量与红字：</b>「×n」表示实际偷出 n 个；<span class="dead">红字物品</span>偷到后生物会立刻死亡——即死时的额外掉落见红字区标注。</li>
+    </ul>
+  </section>
+
+  <div class="list-head">
+    <h2>偷窃掉落表</h2>
+    <span class="sub">普通生物 · 专属掉落 · 数值取自 UM Beta 6.0.2.4</span>
+  </div>
+
+  <div class="cols" id="entries"><!-- JS 填充 --></div>
+
+  <footer>
+    <span class="hand">※ 偷到的都是命，别追着浣猫道歉。</span>
+    <span><span class="stamp">UM 6.0.2.4 校对</span>　数值可能随模组版本变动</span>
+  </footer>
+
+</div></div>
+
+<script>
+const DATA = /*__DATA__*/[];
+
+document.getElementById("entries").innerHTML = DATA.map(e => `
+  <div class="entry">
+    <div class="name-row">
+      <span class="name">${e.name}</span>
+      <span class="leader"></span>
+      ${e.boss ? '<span class="tag">BOSS</span>' : ''}
+    </div>
+    <div class="drops">${e.drops.map(d =>
+      `<span class="it">${d.dead ? `<span class="dead">${d.n}</span>` : `<b>${d.n}</b>`}` +
+      ` <span class="pct">${d.p}</span>${d.m ? `<span class="mult"> ×${d.m}</span>` : ''}</span>`
+    ).join('<span class="sep">·</span>')}</div>
+  </div>`).join("");
+</script>
+</body>
+</html>

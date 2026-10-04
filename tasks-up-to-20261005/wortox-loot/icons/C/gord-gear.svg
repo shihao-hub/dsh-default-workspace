@@ -1,0 +1,5 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" data-icon="gord-gear">
+  <path d="M19.1 10.5C23.3 6.0 28.5 6.3 34.5 11.3c-.5 2.2-1.3 4.1-2.6 5.8 1.6 1.4 3.1 2.3 4.6 2.8-2.8 5.0-6.7 7.7-11.6 8.2-4.9.5-9-2.4-12.4-8.7-1.5 3.8-3.5 6.9-6.1 9.1-.9-1.7-1.4-3.5-1.5-5.4 1.8-1.8 3.3-4.0 4.6-6.5.2-2.9 1.5-5.9 3.9-8.8 2.0-1.5 3.9-3.5 5.7-5.8" fill="none" stroke="#B8873F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M18.1 13.6c4.6-3.0 8.9-3.9 12.9-2.6M15.7 16.5c-1.1 5.2-1.6 10.6-1.5 16.0" fill="none" stroke="#7A5C2E" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M30.1 9.6c-2.2 2.7-4.9 4.4-8.1 5.0" fill="none" stroke="#E3B341" stroke-width="1.3" stroke-linecap="round" opacity=".6"/>
+</svg>
